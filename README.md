@@ -157,7 +157,3 @@ Each module should have its own `README.md` (eventually) detailing its purpose, 
     * Provision VMs on Proxmox (e.g., a dedicated Docker host VM).
     * Deploy the Dockerized services (from Phase 1) inside these VMs using OpenTofu.
     * Potentially manage LXC containers on Proxmox for suitable services.
-
----
-
-Remember to replace placeholders like `<your-repo-url>` and customize the content based on the specifics of your setup as it evolves.
