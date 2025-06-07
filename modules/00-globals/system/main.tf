@@ -14,9 +14,9 @@ output "timezone" {
   value       = data.dotenv.system_config.entries.TIMEZONE
 }
 
-output "data_dir" {
-  description = "Base directory for data volumes"
-  value       = data.dotenv.system_config.entries.DATA_DIR
+output "volume_host" {
+  description = "Base directory for host volumes"
+  value       = data.dotenv.system_config.entries.VOLUME_HOST
 }
 
 output "puid" {

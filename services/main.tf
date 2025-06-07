@@ -1,6 +1,6 @@
 locals {
   module_dir = "../modules"
-  data_dir   = module.system_globals.data_dir
+  volume_host = module.system_globals.volume_host
 }
 
 module "system_globals" {
@@ -20,11 +20,11 @@ module "homelab_docker_network" {
 
 module "actualbudget" {
   source      = "${local.module_dir}/20-services-apps/actualbudget"
-  volume_path = "${local.data_dir}/actual"
+  volume_path = "${local.volume_host}/actual"
   networks    = [module.homelab_docker_network.name]
 }
 
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
-  volume_path = "${local.data_dir}/emulatorjs"
+  volume_path = "${local.volume_host}/emulatorjs"
 }
