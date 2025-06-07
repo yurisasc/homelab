@@ -28,3 +28,10 @@ module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
 }
+
+module "ntfy" {
+  source      = "${local.module_dir}/20-services-apps/ntfy"
+  volume_path = "${local.volume_host}/ntfy"
+  networks    = [module.homelab_docker_network.name]
+}
+  
