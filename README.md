@@ -1,8 +1,6 @@
 # My OpenTofu Homelab Infrastructure
 
-This project uses [OpenTofu](https://opentofu.org/) to manage the infrastructure for my personal homelab. It's designed to be modular and evolve, initially focusing on deploying Dockerized applications on a Debian server ("casa") and later expanding to include Proxmox VE for virtualization.
-
-**Current Time:** June 5, 2025
+This project uses [OpenTofu](https://opentofu.org/) to manage the infrastructure for my personal homelab. It's designed to be modular and evolve, initially focusing on deploying Dockerized applications on a Debian server and later expanding to include Proxmox VE for virtualization.
 
 ## Table of Contents
 
@@ -29,7 +27,7 @@ Before you begin, ensure you have the following installed and configured:
 
 * **OpenTofu:** Version `1.6.0` or higher. [Installation Guide](https://opentofu.org/docs/intro/install/)
 * **Git:** For version control.
-* **Docker:** Installed and running on the target host(s) (initially "casa", later on VMs within Proxmox).
+* **Docker:** Installed and running on the target host(s) (later on VMs within Proxmox).
 * **(Optional) Cloudflare Account:** If using the Cloudflare provider for DNS management or Tunnels. You'll need your Zone ID and an API Token.
 * **(Future) Proxmox VE:** When moving to the virtualization phase, a Proxmox VE host will be required.
 * **(Optional) Tailscale:** For secure remote access.
