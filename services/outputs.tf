@@ -6,6 +6,7 @@ output "service_definitions" {
   value = [
     module.actualbudget.service_definition,
     module.emulatorjs.service_definition,
+    module.linkwarden.service_definition,
     module.ntfy.service_definition
   ]
 }

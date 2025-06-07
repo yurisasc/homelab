@@ -29,6 +29,12 @@ module "emulatorjs" {
   volume_path = "${local.volume_host}/emulatorjs"
 }
 
+module "linkwarden" {
+  source      = "${local.module_dir}/20-services-apps/linkwarden"
+  volume_path = "${local.volume_host}/linkwarden"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "ntfy" {
   source      = "${local.module_dir}/20-services-apps/ntfy"
   volume_path = "${local.volume_host}/ntfy"
