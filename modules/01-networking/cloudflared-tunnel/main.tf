@@ -29,10 +29,10 @@ locals {
   // Transform service definitions into ingress rules format, only for services with ingress_enabled
   service_ingress_rules = flatten([
     for service in var.service_definitions :
-    // Only process services with hostnames AND where ingress is enabled (or default to true for backward compatibility)
-    (length(service.hostnames) > 0) ? [
-      for hostname in service.hostnames : {
-        hostname = "${hostname}.${var.domain}"
+    // Only process services with subdomains AND where ingress is enabled (or default to true for backward compatibility)
+    (length(service.subdomains) > 0) ? [
+      for subdomain in service.subdomains : {
+        hostname = "${subdomain}.${var.domain}"
         service  = service.endpoint
       }
     ] : []

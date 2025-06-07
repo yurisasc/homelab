@@ -3,7 +3,7 @@ output "services" {
   value = [
     for service in module.services.service_definitions : {
       name     = service.name
-      endpoint = contains(keys(service), "hostnames") ? "${service.hostnames[0]}.${module.cloudflare_globals.domain}" : service.endpoint
+      endpoint = contains(keys(service), "subdomains") ? "${service.subdomains[0]}.${module.cloudflare_globals.domain}" : service.endpoint
     }
   ]
 }

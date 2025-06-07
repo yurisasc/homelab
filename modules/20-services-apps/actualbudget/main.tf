@@ -20,7 +20,7 @@ locals {
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
   monitoring     = true
   exposed_port   = 5006
-  hostnames      = ["budget"]
+  subdomains     = ["budget"]
   default_volumes = [
     {
       container_path = "/data"
@@ -46,6 +46,6 @@ output "service_definition" {
     name         = local.container_name
     primary_port = local.exposed_port
     endpoint     = "http://${local.container_name}:${local.exposed_port}"
-    hostnames    = local.hostnames
+    subdomains    = local.subdomains
   }
 }
