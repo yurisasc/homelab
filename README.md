@@ -27,7 +27,7 @@ This OpenTofu configuration manages various self-hosted services primarily as Do
 
 Before you begin, ensure you have the following installed and configured:
 
-* **OpenTofu:** Version `1.6.0` or higher (see `versions.tf`). [Installation Guide](https://opentofu.org/docs/intro/install/)
+* **OpenTofu:** Version `1.6.0` or higher. [Installation Guide](https://opentofu.org/docs/intro/install/)
 * **Git:** For version control.
 * **Docker:** Installed and running on the target host(s) (initially "casa", later on VMs within Proxmox).
 * **(Optional) Cloudflare Account:** If using the Cloudflare provider for DNS management or Tunnels. You'll need your Zone ID and an API Token.
@@ -50,12 +50,7 @@ homelab/
 ├── versions.tf               # Root module: OpenTofu & provider version constraints
 ├── terraform.tfvars.example  # Example variables file
 │
-├── environments/
-│   ├── core/                 # Core infrastructure (monitoring, globals)
-│   ├── network/              # Network infrastructure (Docker networks, Cloudflare)
-│   └── services/             # Application services (Docker containers)
-│
-└── modules/                  # Local modules for different components
+├── modules/                  # Local modules for different components
     ├── 00-globals/           # Optional: Global data sources/locals
     ├── 01-networking/
     │   ├── docker-network/
@@ -69,6 +64,8 @@ homelab/
         ├── jellyfin/
         ├── affine/
         └── ...               # Other application modules
+│
+└── services/                 # Application services (Docker containers)
 ```
 
 ## Configuration
@@ -82,19 +79,12 @@ homelab/
 2.  **Provider Configuration:**
     Review `providers.tf` and ensure provider configurations are suitable. For providers requiring authentication (like Cloudflare or Proxmox later), API tokens and other sensitive data should be supplied via variables.
 
-3.  **Create a `terraform.tfvars` file:**
-    Copy `terraform.tfvars.example` to `terraform.tfvars`:
+3.  **Create a `.env` file:**
+    Copy `.env.example` to `.env`:
     ```bash
-    cp terraform.tfvars.example terraform.tfvars
+    cp .env.example .env
     ```
-    **Edit `terraform.tfvars` to set your specific values.** This file is included in `.gitignore` by default if it's expected to contain secrets.
-    Common variables to configure might include:
-    * `cloudflare_api_token`
-    * `cloudflare_zone_id`
-    * `docker_host_data_path_base` (e.g., `/srv/docker_data` on "casa")
-    * `domain_name` (e.g., `homelab.yourdomain.com`)
-    * Specific application settings (ports, image tags, paths for persistent data).
-    * (Future) Proxmox API details.
+    **Edit `.env` to set your specific values.** This file is included in `.gitignore` by default as it's expected to contain secrets.
 
 ## Usage
 
@@ -110,18 +100,12 @@ Make sure you are in the root directory of the project (`homelab/`).
     This command shows you what OpenTofu will do to reach the desired state defined in your configuration files. Review the plan carefully.
     ```bash
     tofu plan
-    # To use a specific .tfvars file:
-    # tofu plan -var-file="terraform.tfvars"
     ```
 
 3.  **Apply Changes:**
     This command applies the changes outlined in the plan. You will be prompted for confirmation.
     ```bash
     tofu apply
-    # To use a specific .tfvars file:
-    # tofu apply -var-file="terraform.tfvars"
-    # To auto-approve (use with caution):
-    # tofu apply -auto-approve -var-file="terraform.tfvars"
     ```
 
 4.  **View Outputs:**
@@ -134,8 +118,6 @@ Make sure you are in the root directory of the project (`homelab/`).
     This command will attempt to destroy all resources managed by this OpenTofu configuration.
     ```bash
     tofu destroy
-    # To use a specific .tfvars file:
-    # tofu destroy -var-file="terraform.tfvars"
     ```
 
 ## Module Overview
@@ -143,7 +125,7 @@ Make sure you are in the root directory of the project (`homelab/`).
 This project aims for a high degree of modularity:
 
 * **`modules/01-networking/`**: Contains modules for creating Docker networks, managing Cloudflare DNS records, and deploying `cloudflared` tunnels.
-* **`modules/10-services-generic/docker-service/`**: A reusable module to deploy any generic Docker container with common configurations (ports, volumes, environment variables, etc.).
+* **`modules/10-services-generic/`**: A reusable module to deploy any generic module with common configurations (Docker container setup, etc.).
 * **`modules/20-services-apps/`**: Contains "wrapper" modules for specific applications (e.g., Jellyfin, Affine, Nginx Proxy Manager). These modules typically call the generic `docker-service` module with pre-filled defaults and simpler inputs specific to that application.
 * **`modules/02-compute/`**: (Planned for future Proxmox integration) Will contain modules for provisioning Virtual Machines or LXC containers on Proxmox VE, which can then serve as hosts for Docker or other services.
 

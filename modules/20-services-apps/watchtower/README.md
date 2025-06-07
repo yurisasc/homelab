@@ -10,39 +10,6 @@ This module deploys a Watchtower container which automatically updates your runn
 - Notification support via shoutrrr
 - Container monitoring options
 
-## Usage
-
-To use this module in your root module, add the following code:
-
-```hcl
-module "watchtower" {
-  source = "./modules/20-services-apps/watchtower"
-  
-  # Basic configuration
-  container_name = "watchtower"
-  image_tag      = "latest"
-  timezone       = "Australia/Sydney"
-  
-  # Update settings
-  poll_interval   = 86400  # Check once per day (in seconds)
-  cleanup         = true   # Remove old images after updating
-  rolling_restart = true   # Update containers one by one
-  
-  # Optional notification settings
-  enable_notifications = false
-  # notification_url   = "discord://webhook-id/webhook-token"
-  
-  # Additional settings as needed
-  # additional_env_vars = {
-  #   WATCHTOWER_MONITOR_ONLY = "true"
-  # }
-}
-```
-
-## Required Resources
-
-This module leverages the generic `docker-service` module, which handles the Docker container deployment.
-
 ## Input Variables
 
 | Name | Description | Type | Default |

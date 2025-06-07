@@ -22,10 +22,10 @@ module "my_service" {
   container_name = "my-service"
   image          = "organization/image"
   tag            = "latest"
-  
+
   restart_policy = "unless-stopped"
   network_mode   = "bridge"
-  
+
   // Port mappings
   ports = [
     {
@@ -34,7 +34,7 @@ module "my_service" {
       protocol = "tcp"
     }
   ]
-  
+
   // Volume mappings
   volumes = [
     {
@@ -43,17 +43,17 @@ module "my_service" {
       read_only      = false
     }
   ]
-  
+
   // Environment variables
   env_vars = {
     VARIABLE_NAME = "value"
   }
-  
+
   // Container labels
   labels = {
     "com.example.description" = "My service description"
   }
-  
+
   // Enable Watchtower updates
   monitoring = true
 }
@@ -69,6 +69,9 @@ terraform {
     docker = {
       source = "kreuzwerker/docker"
     }
+    dotenv = {
+      source = "germanbrew/dotenv"
+    }
   }
 }
 ```
@@ -79,10 +82,10 @@ See the `variables.tf` file for a complete list of input variables and their des
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| container_name | Name of the Docker container |
-| container_id | ID of the Docker container |
-| image_id | ID of the Docker image |
-| ip_address | IP address of the container (if applicable) |
-| container_ports | Published ports of the container |
+| Name            | Description                                 |
+| --------------- | ------------------------------------------- |
+| container_name  | Name of the Docker container                |
+| container_id    | ID of the Docker container                  |
+| image_id        | ID of the Docker image                      |
+| ip_address      | IP address of the container (if applicable) |
+| container_ports | Published ports of the container            |

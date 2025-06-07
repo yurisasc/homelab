@@ -31,21 +31,25 @@ Before using this module, you need:
 ```hcl
 module "homelab_tunnel" {
   source = "./modules/01-networking/cloudflared-tunnel"
-  
+
   cloudflare_account_id = var.cloudflare_account_id
   cloudflare_zone_id    = var.cloudflare_zone_id
-  
+
   tunnel_name    = "homelab-tunnel"
   container_name = "cloudflared-homelab"
-  
+
   ingress_rules = [
-    {
-      hostname = "budget.example.com"
-      service  = "http://actualbudget:5006"
-    },
     {
       hostname = "dashboard.example.com"
       service  = "http://homepage:3000"
+    }
+  ]
+
+  service_definitions = [
+    {
+      name = "homepage"
+      subdomains = ["dashboard"]
+      endpoint = "http://homepage:3000"
     }
   ]
 }
@@ -58,21 +62,14 @@ For cleaner code organization, use the globals module:
 ```hcl
 module "cloudflare_globals" {
   source = "./modules/00-globals/cloudflare"
-  
-  cloudflare_api_token = var.cloudflare_api_token
-  cloudflare_account_id = var.cloudflare_account_id
-  cloudflare_zone_id = var.cloudflare_zone_id
-  domain = "example.com"
 }
 
 module "homelab_tunnel" {
   source = "./modules/01-networking/cloudflared-tunnel"
-  
+
   cloudflare_account_id = module.cloudflare_globals.cloudflare_account_id
   cloudflare_zone_id    = module.cloudflare_globals.cloudflare_zone_id
-  
   tunnel_name = "homelab-tunnel"
-  
   ingress_rules = [
     {
       hostname = "budget.${module.cloudflare_globals.domain}"
@@ -84,16 +81,17 @@ module "homelab_tunnel" {
 
 ## Variables
 
-| Name | Description | Type | Default |
-|------|-------------|------|---------|
-| `cloudflare_account_id` | Cloudflare account ID | string | (required) |
-| `cloudflare_zone_id` | Cloudflare zone ID for your domain | string | (required) |
-| `container_name` | Name of the Cloudflare tunnel container | string | "" (defaults to "cloudflared-{tunnel_name}") |
-| `image_tag` | Docker image tag for cloudflared | string | "latest" |
-| `tunnel_name` | Name of the tunnel | string | (required) |
-| `tunnel_secret` | Secret for the tunnel | string | "" (auto-generated if empty) |
-| `ingress_rules` | List of ingress rules | list(object) | (required) |
-| `monitoring` | Enable monitoring via Watchtower | bool | true |
+| Name                    | Description                             | Type         | Default                                      |
+| ----------------------- | --------------------------------------- | ------------ | -------------------------------------------- |
+| `cloudflare_account_id` | Cloudflare account ID                   | string       | (required)                                   |
+| `cloudflare_zone_id`    | Cloudflare zone ID for your domain      | string       | (required)                                   |
+| `container_name`        | Name of the Cloudflare tunnel container | string       | "" (defaults to "cloudflared-{tunnel_name}") |
+| `image_tag`             | Docker image tag for cloudflared        | string       | "latest"                                     |
+| `tunnel_name`           | Name of the tunnel                      | string       | (required)                                   |
+| `tunnel_secret`         | Secret for the tunnel                   | string       | "" (auto-generated if empty)                 |
+| `ingress_rules`         | List of ingress rules                   | list(object) | (optional)                                   |
+| `service_definitions`   | List of service definitions. Tunnel will create DNS records for each service with a subdomain.             | list(object) | (optional)                                   |
+| `monitoring`            | Enable monitoring via Watchtower        | bool         | true                                         |
 
 ### Ingress Rules Object Structure
 
@@ -110,14 +108,14 @@ ingress_rules = [
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| `tunnel_id` | ID of the created tunnel |
-| `tunnel_name` | Name of the tunnel |
-| `tunnel_token` | Token for the tunnel (sensitive) |
-| `cname_target` | CNAME target for the tunnel |
-| `dns_records` | Map of created DNS records |
-| `container_name` | Name of the cloudflared container |
-| `container_id` | ID of the cloudflared container |
-| `image_id` | ID of the cloudflared image |
-| `ip_address` | IP address of the cloudflared container |
+| Name             | Description                             |
+| ---------------- | --------------------------------------- |
+| `tunnel_id`      | ID of the created tunnel                |
+| `tunnel_name`    | Name of the tunnel                      |
+| `tunnel_token`   | Token for the tunnel (sensitive)        |
+| `cname_target`   | CNAME target for the tunnel             |
+| `dns_records`    | Map of created DNS records              |
+| `container_name` | Name of the cloudflared container       |
+| `container_id`   | ID of the cloudflared container         |
+| `image_id`       | ID of the cloudflared image             |
+| `ip_address`     | IP address of the cloudflared container |
