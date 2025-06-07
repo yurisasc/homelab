@@ -1,20 +1,33 @@
 // Generic Docker service module
 // Creates and manages a Docker container with configurable options
+module "system_globals" {
+  source = "../../00-globals/system"
+}
 
 terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = ">= 3.0.0"
+    }
+    dotenv = {
+      source = "germanbrew/dotenv"
     }
   }
 }
 
 locals {
-  network_mode  = var.network_mode
+  network_mode   = var.network_mode
   container_name = var.container_name
-  image_name    = "${var.image}:${var.tag}"
-  
+  image_name     = "${var.image}:${var.tag}"
+
+  default_env_vars = {
+    TZ   = module.system_globals.timezone
+    PUID = module.system_globals.puid
+    PGID = module.system_globals.pgid
+  }
+
+  env_vars = merge(var.env_vars, local.default_env_vars)
+
   // Prepare ports configuration
   ports_config = [
     for port in var.ports : {
@@ -23,7 +36,7 @@ locals {
       protocol = port.protocol
     }
   ]
-  
+
   // Prepare volumes configuration
   volumes_config = [
     for volume in var.volumes : {
@@ -32,20 +45,20 @@ locals {
       read_only      = volume.read_only
     }
   ]
-  
+
   // Define monitoring labels if enabled
   monitoring_labels = var.monitoring ? {
     "com.centurylinklabs.watchtower.enable" = "true"
   } : {}
-  
+
   // Merge provided labels with monitoring labels
   merged_labels = merge(var.labels, local.monitoring_labels)
 }
 
 // Pull the Docker image
 resource "docker_image" "service_image" {
-  name         = local.image_name
-  keep_locally = var.keep_image_locally
+  name          = local.image_name
+  keep_locally  = var.keep_image_locally
   pull_triggers = [var.tag]
 }
 
@@ -53,12 +66,12 @@ resource "docker_image" "service_image" {
 resource "docker_container" "service_container" {
   name  = local.container_name
   image = docker_image.service_image.image_id
-  
+
   restart = var.restart_policy
-  
+
   # Set the network mode (bridge, host, etc.)
   network_mode = local.network_mode
-  
+
   # Dynamically configure ports based on the provided list
   dynamic "ports" {
     for_each = local.ports_config
@@ -68,7 +81,7 @@ resource "docker_container" "service_container" {
       protocol = ports.value.protocol
     }
   }
-  
+
   # Dynamically configure networks based on the provided list
   dynamic "networks_advanced" {
     for_each = var.networks
@@ -76,7 +89,7 @@ resource "docker_container" "service_container" {
       name = networks_advanced.value
     }
   }
-  
+
   # Dynamically configure volumes based on the provided list
   dynamic "volumes" {
     for_each = local.volumes_config
@@ -86,10 +99,10 @@ resource "docker_container" "service_container" {
       read_only      = volumes.value.read_only
     }
   }
-  
+
   # Configure environment variables - map to array of strings
-  env = [for k, v in var.env_vars : "${k}=${v}"]
-  
+  env = [for k, v in local.env_vars : "${k}=${v}"]
+
   # Set container labels
   dynamic "labels" {
     for_each = local.merged_labels
@@ -98,7 +111,7 @@ resource "docker_container" "service_container" {
       value = labels.value
     }
   }
-  
+
   # Add container healthcheck if configured
   dynamic "healthcheck" {
     for_each = var.healthcheck != null ? [var.healthcheck] : []
@@ -110,23 +123,23 @@ resource "docker_container" "service_container" {
       retries      = healthcheck.value.retries
     }
   }
-  
+
   # Set resource limits if specified
-  memory               = var.memory_limit
-  memory_swap          = var.memory_swap_limit
-  cpu_shares           = var.cpu_shares
-  
+  memory      = var.memory_limit
+  memory_swap = var.memory_swap_limit
+  cpu_shares  = var.cpu_shares
+
   # Other container options
-  dns             = var.dns
-  dns_search      = var.dns_search
-  hostname        = var.hostname
-  domainname      = var.domainname
-  user            = var.user
-  working_dir     = var.working_dir
-  command         = var.command
-  entrypoint      = var.entrypoint
-  privileged      = var.privileged
-  
+  dns         = var.dns
+  dns_search  = var.dns_search
+  hostname    = var.hostname
+  domainname  = var.domainname
+  user        = var.user
+  working_dir = var.working_dir
+  command     = var.command
+  entrypoint  = var.entrypoint
+  privileged  = var.privileged
+
   # Set log options
   log_driver = var.log_driver
   log_opts   = var.log_opts

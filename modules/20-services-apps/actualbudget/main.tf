@@ -1,49 +1,51 @@
-// ActualBudget module for budgeting
-// This module configures an ActualBudget container with the specified volumes
+variable "image_tag" {
+  description = "Tag of the ActualBudget image to use"
+  type        = string
+  default     = "latest"
+}
+
+variable "volume_path" {
+  description = "Host path for ActualBudget data volume"
+  type        = string
+}
+
+variable "networks" {
+  description = "List of networks to which the container should be attached"
+  type        = list(string)
+}
 
 locals {
-  container_name = var.container_name != "" ? var.container_name : "actualbudget"
+  container_name = "actualbudget"
+  image          = "actualbudget/actual-server"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-
-  default_env_vars = {
-    TZ = var.timezone
-    PUID = var.puid
-    PGID = var.pgid
-  }
-
+  monitoring     = true
+  exposed_port   = 5006
+  hostnames      = ["budget"]
   default_volumes = [
     {
       container_path = "/data"
-      host_path      = var.data_volume_path
+      host_path      = "${var.volume_path}/data"
       read_only      = false
     }
   ]
 }
 
 module "actualbudget" {
-  source = "../../10-services-generic/docker-service"
+  source         = "../../10-services-generic/docker-service"
+  container_name = local.container_name
+  image          = local.image
+  tag            = local.image_tag
+  volumes        = local.default_volumes
+  networks       = var.networks
+  monitoring     = local.monitoring
+}
 
-  container_name = var.container_name
-  image          = "actualbudget/actual-server"
-  tag            = var.image_tag
-  
-  // Environment variables
-  env_vars = local.default_env_vars
-
-  // Port mapping
-  ports = [
-    {
-      internal = 5006
-      external = var.port
-      protocol = "tcp"
-    }
-  ]
-
-  // Volume mapping
-  volumes = local.default_volumes
-
-  // Enable monitoring for the container via Watchtower
-  monitoring = var.monitoring
-
-  networks = var.networks
+output "service_definition" {
+  description = "General service definition with optional ingress configuration"
+  value = {
+    name         = local.container_name
+    primary_port = local.exposed_port
+    endpoint     = "http://${local.container_name}:${local.exposed_port}"
+    hostnames    = local.hostnames
+  }
 }

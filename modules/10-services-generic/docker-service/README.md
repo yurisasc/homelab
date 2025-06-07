@@ -67,8 +67,7 @@ This module requires the Docker provider to be configured in your root module:
 terraform {
   required_providers {
     docker = {
-      source  = "kreuzwerker/docker"
-      version = ">= 3.0.0"
+      source = "kreuzwerker/docker"
     }
   }
 }

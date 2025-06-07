@@ -1,5 +1,4 @@
 // Outputs for Docker Network module
-
 output "network_id" {
   description = "The ID of the Docker network"
   value       = docker_network.this.id

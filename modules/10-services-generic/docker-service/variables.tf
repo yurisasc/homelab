@@ -23,7 +23,7 @@ variable "keep_image_locally" {
 variable "restart_policy" {
   description = "Docker restart policy (no, always, unless-stopped, on-failure)"
   type        = string
-  default     = "unless-stopped"
+  default     = "always"
 }
 
 variable "network_mode" {
