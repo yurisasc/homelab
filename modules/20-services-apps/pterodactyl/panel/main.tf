@@ -124,7 +124,7 @@ module "database" {
   tag            = local.database_tag
   volumes        = local.database_volumes
   env_vars       = local.database_env_vars
-  networks       = concat([module.pterodactyl_network.name], var.networks)
+  networks       = [module.pterodactyl_network.name]
   command        = ["--default-authentication-plugin=mysql_native_password"]
   monitoring     = local.monitoring
 }
@@ -135,7 +135,7 @@ module "cache" {
   container_name = local.cache_name
   image          = local.cache_image
   tag            = local.cache_tag
-  networks       = concat([module.pterodactyl_network.name], var.networks)
+  networks       = [module.pterodactyl_network.name]
   monitoring     = local.monitoring
 }
 
