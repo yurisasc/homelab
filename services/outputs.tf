@@ -10,7 +10,8 @@ output "service_definitions" {
     module.ntfy.service_definition,
     module.pterodactyl_wings.service_definition,
     module.pterodactyl_panel.service_definition,
-    module.n8n.service_definition
+    module.n8n.service_definition,
+    module.searxng.service_definition
   ]
 }
 

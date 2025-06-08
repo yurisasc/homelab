@@ -58,3 +58,9 @@ module "n8n" {
   volume_path = "${local.volume_host}/n8n"
   networks    = [module.homelab_docker_network.name]
 }
+
+module "searxng" {
+  source      = "${local.module_dir}/20-services-apps/searxng"
+  volume_path = "${local.volume_host}/searxng"
+  networks    = [module.homelab_docker_network.name]
+}
