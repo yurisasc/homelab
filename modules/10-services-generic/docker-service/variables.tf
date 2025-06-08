@@ -65,6 +65,18 @@ variable "env_vars" {
   sensitive   = true
 }
 
+variable "puid" {
+  description = "User ID for the container"
+  type        = number
+  default     = null
+}
+
+variable "pgid" {
+  description = "Group ID for the container"
+  type        = number
+  default     = null
+}
+
 variable "labels" {
   description = "Docker container labels"
   type        = map(string)
@@ -77,13 +89,22 @@ variable "monitoring" {
   default     = true
 }
 
+variable "host_mappings" {
+  description = "Additional host mappings for the container (/etc/hosts entries)"
+  type = list(object({
+    host = string
+    ip   = string
+  }))
+  default = []
+}
+
 variable "healthcheck" {
   description = "Container healthcheck configuration"
   type = object({
     test         = list(string)
     interval     = string
     timeout      = string
-    start_period = string
+    start_period = optional(string)
     retries      = number
   })
   default = null

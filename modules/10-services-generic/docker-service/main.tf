@@ -7,7 +7,7 @@ module "system_globals" {
 terraform {
   required_providers {
     docker = {
-      source  = "kreuzwerker/docker"
+      source = "kreuzwerker/docker"
     }
     dotenv = {
       source = "germanbrew/dotenv"
@@ -22,8 +22,8 @@ locals {
 
   default_env_vars = {
     TZ   = module.system_globals.timezone
-    PUID = module.system_globals.puid
-    PGID = module.system_globals.pgid
+    PUID = var.puid != null ? var.puid : module.system_globals.puid
+    PGID = var.pgid != null ? var.pgid : module.system_globals.pgid
   }
 
   env_vars = merge(var.env_vars, local.default_env_vars)
@@ -71,6 +71,15 @@ resource "docker_container" "service_container" {
 
   # Set the network mode (bridge, host, etc.)
   network_mode = local.network_mode
+  
+  # Add host mappings (entries for /etc/hosts)
+  dynamic "host" {
+    for_each = var.host_mappings
+    content {
+      host = host.value.host
+      ip   = host.value.ip
+    }
+  }
 
   # Dynamically configure ports based on the provided list
   dynamic "ports" {
