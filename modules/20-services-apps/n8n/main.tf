@@ -90,6 +90,12 @@ locals {
   }
 }
 
+module "n8n_network" {
+  source = "../../01-networking/docker-network"
+  name   = "n8n-network"
+  driver = "bridge"
+}
+
 # Create the PostgreSQL container
 module "postgres" {
   source         = "../../10-services-generic/docker-service"
@@ -98,7 +104,7 @@ module "postgres" {
   tag            = local.database_tag
   volumes        = local.database_volumes
   env_vars       = local.database_env_vars
-  networks       = var.networks
+  networks       = [module.n8n_network.name]
   monitoring     = local.monitoring
   healthcheck    = local.database_healthcheck
 }
@@ -111,7 +117,7 @@ module "n8n" {
   tag            = local.n8n_tag
   volumes        = local.n8n_volumes
   env_vars       = local.n8n_env_vars
-  networks       = var.networks
+  networks       = concat([module.n8n_network.name], var.networks)
   monitoring     = local.monitoring
   depends_on     = [module.postgres]
 }
