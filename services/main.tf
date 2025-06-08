@@ -52,3 +52,9 @@ module "pterodactyl_wings" {
   volume_path = "${local.volume_host}/pterodactyl/wings"
   networks    = [module.homelab_docker_network.name]
 }
+
+module "n8n" {
+  source      = "${local.module_dir}/20-services-apps/n8n"
+  volume_path = "${local.volume_host}/n8n"
+  networks    = [module.homelab_docker_network.name]
+}
