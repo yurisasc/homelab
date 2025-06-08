@@ -1,5 +1,5 @@
 locals {
-  module_dir = "../modules"
+  module_dir  = "../modules"
   volume_host = module.system_globals.volume_host
 }
 
@@ -40,4 +40,15 @@ module "ntfy" {
   volume_path = "${local.volume_host}/ntfy"
   networks    = [module.homelab_docker_network.name]
 }
-  
+
+module "pterodactyl_panel" {
+  source      = "${local.module_dir}/20-services-apps/pterodactyl/panel"
+  volume_path = "${local.volume_host}/pterodactyl/panel"
+  networks    = [module.homelab_docker_network.name]
+}
+
+module "pterodactyl_wings" {
+  source      = "${local.module_dir}/20-services-apps/pterodactyl/wings"
+  volume_path = "${local.volume_host}/pterodactyl/wings"
+  networks    = [module.homelab_docker_network.name]
+}

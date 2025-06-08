@@ -7,7 +7,9 @@ output "service_definitions" {
     module.actualbudget.service_definition,
     module.emulatorjs.service_definition,
     module.linkwarden.service_definition,
-    module.ntfy.service_definition
+    module.ntfy.service_definition,
+    module.pterodactyl_wings.service_definition,
+    module.pterodactyl_panel.service_definition
   ]
 }
 
