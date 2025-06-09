@@ -24,6 +24,12 @@ module "actualbudget" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "coolify" {
+  source      = "${local.module_dir}/20-services-apps/coolify"
+  volume_path = "${local.volume_host}/coolify"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
