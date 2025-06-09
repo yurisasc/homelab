@@ -55,7 +55,7 @@ locals {
     },
     {
       host_path      = "${var.volume_path}/var/lib"
-      container_path = "/var/lib/pterodactyl/"
+      container_path = "${var.volume_path}/var/lib"
       read_only      = false
     },
     {
@@ -65,7 +65,7 @@ locals {
     },
     {
       host_path      = "${var.volume_path}/tmp"
-      container_path = "/tmp/pterodactyl/"
+      container_path = "${var.volume_path}/tmp"
       read_only      = false
     },
   ]
@@ -86,7 +86,7 @@ module "wings_network" {
   name       = "ptero-wings"
   driver     = "bridge"
   attachable = true
-  subnet     = "172.32.0.0/16"
+  subnet     = "172.21.0.0/16"
   options = {
     "com.docker.network.bridge.name" = "ptero-wings"
   }
@@ -97,6 +97,8 @@ module "wings" {
   container_name = local.container_name
   image          = local.image
   tag            = local.image_tag
+  pgid           = 988
+  puid           = 988
   volumes        = local.volumes
   env_vars       = local.env_vars
   networks       = concat([module.wings_network.name], var.networks)
