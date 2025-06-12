@@ -30,3 +30,8 @@ output "cloudflare_api_token" {
   value       = data.dotenv_sensitive.cloudflare_credentials.entries.CLOUDFLARE_API_TOKEN
   sensitive   = true
 }
+
+output "external_ip" {
+  description = "External IP address for the homelab"
+  value       = data.dotenv.cloudflare_config.entries.EXTERNAL_IP
+}
