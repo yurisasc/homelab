@@ -21,11 +21,6 @@ output "cname_target" {
   value       = "${cloudflare_zero_trust_tunnel_cloudflared.this.id}.cfargotunnel.com"
 }
 
-output "dns_records" {
-  description = "Map of created DNS records"
-  value       = { for k, v in cloudflare_record.service : k => v.hostname }
-}
-
 output "container_name" {
   description = "The name of the Cloudflared tunnel container"
   value       = module.cloudflared.container_name

@@ -53,7 +53,8 @@ variable "service_definitions" {
     name         = string
     primary_port = number
     endpoint     = string
-    subdomains    = optional(list(string), [])
+    subdomains   = optional(list(string), [])
+    publish_via  = optional(string)
   }))
   default = []
 }

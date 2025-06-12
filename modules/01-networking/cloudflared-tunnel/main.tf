@@ -26,16 +26,21 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "this" {
 }
 
 locals {
+  // Filter services to only include those that should be published via tunnel
+  tunnel_services = [
+    for service in var.service_definitions :
+    service if length(service.subdomains) > 0 && (service.publish_via == "tunnel" || service.publish_via == "both")
+  ]
+
   // Transform service definitions into ingress rules format, only for services with ingress_enabled
   service_ingress_rules = flatten([
-    for service in var.service_definitions :
-    // Only process services with subdomains AND where ingress is enabled (or default to true for backward compatibility)
-    (length(service.subdomains) > 0) ? [
+    for service in local.tunnel_services :
+    [
       for subdomain in service.subdomains : {
         hostname = "${subdomain}.${var.domain}"
         service  = service.endpoint
       }
-    ] : []
+    ]
   ])
 
   // Combine manual ingress rules and service-generated ones
@@ -67,21 +72,18 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "this" {
   }
 }
 
-// Create DNS record for each service
-resource "cloudflare_record" "service" {
-  for_each = {
-    for rule in local.all_ingress_rules : rule.hostname => rule
-    if rule.hostname != null && rule.hostname != ""
-  }
-
+module "dns_records" {
+  source = "../../10-services-generic/cloudflare-dns"
   zone_id = var.cloudflare_zone_id
-  name    = split(".", each.value.hostname)[0] // Extract subdomain
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.this.id}.cfargotunnel.com"
-  type    = "CNAME"
-  proxied = true
+  hostnames = [
+    for rule in local.all_ingress_rules :
+    rule.hostname if rule.hostname != null && rule.hostname != ""
+  ]
+  target_content = "${cloudflare_zero_trust_tunnel_cloudflared.this.id}.cfargotunnel.com"
+  record_type    = "CNAME"
+  proxied        = true
 }
 
-// Set up the Docker container
 locals {
   container_name = var.container_name != "" ? var.container_name : "cloudflared-${var.tunnel_name}"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
