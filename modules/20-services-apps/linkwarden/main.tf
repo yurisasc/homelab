@@ -90,5 +90,6 @@ output "service_definition" {
     primary_port = local.internal_port
     endpoint     = "http://${local.container_name}:${local.internal_port}"
     subdomains   = ["links"]
+    publish_via  = "tunnel"
   }
 }
