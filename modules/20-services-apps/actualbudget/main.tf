@@ -47,5 +47,6 @@ output "service_definition" {
     primary_port = local.exposed_port
     endpoint     = "http://${local.container_name}:${local.exposed_port}"
     subdomains    = local.subdomains
+    publish_via   = "tunnel"
   }
 }
