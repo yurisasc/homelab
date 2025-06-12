@@ -159,5 +159,6 @@ output "service_definition" {
     primary_port = 80
     endpoint     = "http://${local.container_name}:80"
     subdomains   = ["gameservers"]
+    publish_via  = "tunnel"
   }
 }

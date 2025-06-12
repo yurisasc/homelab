@@ -113,5 +113,6 @@ output "service_definition" {
     primary_port = 443
     endpoint     = "http://${local.container_name}:443"
     subdomains   = local.subdomains
+    publish_via  = "tunnel"
   }
 }
