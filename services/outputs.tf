@@ -5,6 +5,7 @@ output "service_definitions" {
   description = "Service definitions for all services"
   value = [
     module.actualbudget.service_definition,
+    module.affine.service_definition,
     module.emulatorjs.service_definition,
     module.linkwarden.service_definition,
     module.ntfy.service_definition,

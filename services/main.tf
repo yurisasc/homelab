@@ -24,6 +24,12 @@ module "actualbudget" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "affine" {
+  source      = "${local.module_dir}/20-services-apps/affine"
+  volume_path = "${local.volume_host}/affine"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
