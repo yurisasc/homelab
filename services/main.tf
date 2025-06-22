@@ -30,6 +30,12 @@ module "affine" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "calibre" {
+  source      = "${local.module_dir}/20-services-apps/calibre"
+  volume_path = "${local.volume_host}/calibre"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
