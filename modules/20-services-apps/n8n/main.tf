@@ -23,15 +23,22 @@ variable "networks" {
   default     = []
 }
 
+module "system_globals" {
+  source = "../../00-globals/system"
+}
+
 locals {
-  container_name  = "n8n"
-  database_name   = "n8n-postgres"
-  n8n_image       = "docker.n8n.io/n8nio/n8n"
-  database_image  = "postgres"
-  n8n_tag         = var.image_tag != "" ? var.image_tag : "latest"
-  database_tag    = "16"
-  monitoring      = true
-  env_file        = "${path.module}/.env"
+  container_name    = "n8n"
+  database_name     = "n8n-postgres"
+  redis_name        = "n8n-redis"
+  n8n_image         = "docker.n8n.io/n8nio/n8n"
+  database_image    = "postgres"
+  redis_image       = "redis"
+  n8n_tag           = var.image_tag != "" ? var.image_tag : "latest"
+  database_tag      = "16"
+  redis_tag         = "7-alpine"
+  monitoring        = true
+  env_file          = "${path.module}/.env"
   n8n_internal_port = 5678
   
   # Define volumes
@@ -42,7 +49,7 @@ locals {
       read_only      = false
     }
   ]
-  
+
   database_volumes = [
     {
       host_path      = "${var.volume_path}/db_storage/_data"
@@ -55,29 +62,34 @@ locals {
       read_only      = false
     }
   ]
-  
+
   # Environment variables for the database
   database_env_vars = {
-    POSTGRES_USER            = provider::dotenv::get_by_key("POSTGRES_USER", local.env_file)
-    POSTGRES_PASSWORD        = provider::dotenv::get_by_key("POSTGRES_PASSWORD", local.env_file)
-    POSTGRES_DB              = provider::dotenv::get_by_key("POSTGRES_DB", local.env_file)
-    POSTGRES_NON_ROOT_USER   = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_USER", local.env_file)
+    POSTGRES_USER              = provider::dotenv::get_by_key("POSTGRES_USER", local.env_file)
+    POSTGRES_PASSWORD          = provider::dotenv::get_by_key("POSTGRES_PASSWORD", local.env_file)
+    POSTGRES_DB                = provider::dotenv::get_by_key("POSTGRES_DB", local.env_file)
+    POSTGRES_NON_ROOT_USER     = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_USER", local.env_file)
     POSTGRES_NON_ROOT_PASSWORD = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_PASSWORD", local.env_file)
   }
-  
+
   # Environment variables for n8n
   n8n_env_vars = {
-    DB_TYPE                       = "postgresdb"
-    DB_POSTGRESDB_HOST            = local.database_name
-    DB_POSTGRESDB_PORT            = 5432
-    DB_POSTGRESDB_DATABASE        = provider::dotenv::get_by_key("POSTGRES_DB", local.env_file)
-    DB_POSTGRESDB_USER            = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_USER", local.env_file)
-    DB_POSTGRESDB_PASSWORD        = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_PASSWORD", local.env_file)
-    N8N_HOST                      = provider::dotenv::get_by_key("N8N_HOST", local.env_file)
-    N8N_PORT                      = provider::dotenv::get_by_key("N8N_PORT", local.env_file)
-    N8N_PROTOCOL                  = provider::dotenv::get_by_key("N8N_PROTOCOL", local.env_file)
-    WEBHOOK_URL                   = provider::dotenv::get_by_key("WEBHOOK_URL", local.env_file)
-    NODE_FUNCTION_ALLOW_EXTERNAL  = provider::dotenv::get_by_key("NODE_FUNCTION_ALLOW_EXTERNAL", local.env_file)
+    DB_TYPE                      = "postgresdb"
+    DB_POSTGRESDB_HOST           = local.database_name
+    DB_POSTGRESDB_PORT           = 5432
+    DB_POSTGRESDB_DATABASE       = provider::dotenv::get_by_key("POSTGRES_DB", local.env_file)
+    DB_POSTGRESDB_USER           = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_USER", local.env_file)
+    DB_POSTGRESDB_PASSWORD       = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_PASSWORD", local.env_file)
+    N8N_HOST                     = provider::dotenv::get_by_key("N8N_HOST", local.env_file)
+    N8N_PORT                     = provider::dotenv::get_by_key("N8N_PORT", local.env_file)
+    N8N_PROTOCOL                 = provider::dotenv::get_by_key("N8N_PROTOCOL", local.env_file)
+    WEBHOOK_URL                  = provider::dotenv::get_by_key("WEBHOOK_URL", local.env_file)
+    NODE_FUNCTION_ALLOW_EXTERNAL = provider::dotenv::get_by_key("NODE_FUNCTION_ALLOW_EXTERNAL", local.env_file)
+    GENERIC_TIMEZONE             = module.system_globals.timezone
+    QUEUE_BULL_REDIS_HOST        = local.redis_name
+    QUEUE_BULL_REDIS_PORT        = 6379
+    QUEUE_BULL_REDIS_USERNAME    = "redis"
+    QUEUE_BULL_REDIS_PASSWORD    = "redis"
   }
 
   # Healthcheck configuration for the database
@@ -88,6 +100,24 @@ locals {
     retries      = 10
     start_period = "10s"
   }
+
+  # Healthcheck configuration for Redis
+  redis_healthcheck = {
+    test         = ["CMD-SHELL", "redis-cli ping"]
+    interval     = "5s"
+    timeout      = "5s"
+    retries      = 10
+    start_period = "10s"
+  }
+
+  # Define Redis volume
+  redis_volumes = [
+    {
+      host_path      = "${var.volume_path}/redis_data"
+      container_path = "/data"
+      read_only      = false
+    }
+  ]
 }
 
 module "n8n_network" {
@@ -110,6 +140,23 @@ module "postgres" {
   healthcheck    = local.database_healthcheck
 }
 
+# Create the Redis container
+module "redis" {
+  source         = "../../10-services-generic/docker-service"
+  container_name = local.redis_name
+  image          = local.redis_image
+  tag            = local.redis_tag
+  volumes        = local.redis_volumes
+  env_vars = {
+    REDIS_USERNAME = "redis"
+    REDIS_PASSWORD = "redis"
+  }
+  networks    = [module.n8n_network.name]
+  monitoring  = local.monitoring
+  command     = ["redis-server", "--requirepass", "redis", "--user", "redis", "on", ">redis", "~*", "+@all"]
+  healthcheck = local.redis_healthcheck
+}
+
 # Create the n8n container
 module "n8n" {
   source         = "../../10-services-generic/docker-service"
@@ -120,7 +167,7 @@ module "n8n" {
   env_vars       = local.n8n_env_vars
   networks       = concat([module.n8n_network.name], var.networks)
   monitoring     = local.monitoring
-  depends_on     = [module.postgres]
+  depends_on     = [module.postgres, module.redis]
 }
 
 output "service_definition" {
