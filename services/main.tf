@@ -41,6 +41,12 @@ module "emulatorjs" {
   volume_path = "${local.volume_host}/emulatorjs"
 }
 
+module "glance" {
+  source      = "${local.module_dir}/20-services-apps/glance"
+  volume_path = "${local.volume_host}/glance"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "linkwarden" {
   source      = "${local.module_dir}/20-services-apps/linkwarden"
   volume_path = "${local.volume_host}/linkwarden"

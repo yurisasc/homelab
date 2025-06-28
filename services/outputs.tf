@@ -8,6 +8,7 @@ output "service_definitions" {
     module.affine.service_definition,
     module.calibre.service_definition,
     module.emulatorjs.service_definition,
+    module.glance.service_definition,
     module.linkwarden.service_definition,
     module.ntfy.service_definition,
     module.pterodactyl_wings.service_definition,
