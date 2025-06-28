@@ -94,6 +94,7 @@ module "n8n_network" {
   source = "../../01-networking/docker-network"
   name   = "n8n-network"
   driver = "bridge"
+  subnet = "172.24.0.0/16"
 }
 
 # Create the PostgreSQL container
