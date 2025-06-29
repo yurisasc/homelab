@@ -53,6 +53,12 @@ module "linkwarden" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "nocodb" {
+  source      = "${local.module_dir}/20-services-apps/nocodb"
+  volume_path = "${local.volume_host}/nocodb"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "ntfy" {
   source      = "${local.module_dir}/20-services-apps/ntfy"
   volume_path = "${local.volume_host}/ntfy"
