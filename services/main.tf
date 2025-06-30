@@ -36,6 +36,12 @@ module "calibre" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "crawl4ai" {
+  source      = "${local.module_dir}/20-services-apps/crawl4ai"
+  volume_path = "${local.volume_host}/crawl4ai"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
@@ -50,6 +56,12 @@ module "glance" {
 module "linkwarden" {
   source      = "${local.module_dir}/20-services-apps/linkwarden"
   volume_path = "${local.volume_host}/linkwarden"
+  networks    = [module.homelab_docker_network.name]
+}
+
+module "n8n" {
+  source      = "${local.module_dir}/20-services-apps/n8n"
+  volume_path = "${local.volume_host}/n8n"
   networks    = [module.homelab_docker_network.name]
 }
 
@@ -74,12 +86,6 @@ module "pterodactyl_panel" {
 module "pterodactyl_wings" {
   source      = "${local.module_dir}/20-services-apps/pterodactyl/wings"
   volume_path = "${local.volume_host}/pterodactyl/wings"
-  networks    = [module.homelab_docker_network.name]
-}
-
-module "n8n" {
-  source      = "${local.module_dir}/20-services-apps/n8n"
-  volume_path = "${local.volume_host}/n8n"
   networks    = [module.homelab_docker_network.name]
 }
 
