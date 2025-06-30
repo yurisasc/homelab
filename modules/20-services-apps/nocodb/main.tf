@@ -46,7 +46,7 @@ locals {
   # Define volumes
   nocodb_volumes = [
     {
-      host_path      = "${var.volume_path}/nocodb/data"
+      host_path      = "${var.volume_path}/data"
       container_path = "/usr/app/data"
       read_only      = false
     }
@@ -54,7 +54,7 @@ locals {
   
   postgres_volumes = [
     {
-      host_path      = "${var.volume_path}/nocodb/postgres/data"
+      host_path      = "${var.volume_path}/postgres/data"
       container_path = "/var/lib/postgresql/data"
       read_only      = false
     }
