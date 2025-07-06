@@ -12,6 +12,7 @@ output "service_definitions" {
     module.glance.service_definition,
     module.linkwarden.service_definition,
     module.n8n.service_definition,
+    module.n8n.n8n_mcp_service_definition,
     module.nocodb.service_definition,
     module.ntfy.service_definition,
     module.pterodactyl_wings.service_definition,

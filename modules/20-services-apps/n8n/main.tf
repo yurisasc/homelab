@@ -40,7 +40,7 @@ locals {
   monitoring        = true
   env_file          = "${path.module}/.env"
   n8n_internal_port = 5678
-  
+
   # Define volumes
   n8n_volumes = [
     {
@@ -118,6 +118,41 @@ locals {
       read_only      = false
     }
   ]
+
+  n8n_mcp_container_name = "n8n-mcp"
+  n8n_mcp_image          = "ghcr.io/czlonkowski/n8n-mcp"
+  n8n_mcp_tag            = "latest"
+  n8n_mcp_internal_port  = 3000
+
+  n8n_mcp_volumes = [
+    {
+      host_path      = "${var.volume_path}/n8n_mcp_storage/_data"
+      container_path = "/app/data"
+      read_only      = false
+    }
+  ]
+
+  n8n_mcp_env_vars = {
+    MCP_MODE           = "http"
+    USE_FIXED_HTTP     = "true"
+    AUTH_TOKEN         = provider::dotenv::get_by_key("N8N_MCP_AUTH_TOKEN", local.env_file)
+    N8N_API_URL        = "http://${local.container_name}:${local.n8n_internal_port}"
+    N8N_API_KEY        = provider::dotenv::get_by_key("N8N_API_KEY", local.env_file)
+    NODE_ENV           = "production"
+    LOG_LEVEL          = "info"
+    PORT               = local.n8n_mcp_internal_port
+    NODE_DB_PATH       = "/app/data/nodes.db"
+    REBUILD_ON_START   = "false"
+    GENERIC_TIMEZONE   = module.system_globals.timezone
+  }
+
+  n8n_mcp_healthcheck = {
+    test         = ["CMD", "curl", "-f", "http://127.0.0.1:${local.n8n_mcp_internal_port}/health"]
+    interval     = "30s"
+    timeout      = "10s"
+    retries      = 3
+    start_period = "40s"
+  }
 }
 
 module "n8n_network" {
@@ -134,6 +169,7 @@ module "postgres" {
   image          = local.database_image
   tag            = local.database_tag
   volumes        = local.database_volumes
+  user           = "1000:1000"
   env_vars       = local.database_env_vars
   networks       = [module.n8n_network.name]
   monitoring     = local.monitoring
@@ -147,6 +183,7 @@ module "redis" {
   image          = local.redis_image
   tag            = local.redis_tag
   volumes        = local.redis_volumes
+  user           = "1000:1000"
   env_vars = {
     REDIS_USERNAME = "redis"
     REDIS_PASSWORD = "redis"
@@ -164,10 +201,26 @@ module "n8n" {
   image          = local.n8n_image
   tag            = local.n8n_tag
   volumes        = local.n8n_volumes
+  user           = "1000:1000"
   env_vars       = local.n8n_env_vars
   networks       = concat([module.n8n_network.name], var.networks)
   monitoring     = local.monitoring
   depends_on     = [module.postgres, module.redis]
+}
+
+# Create the n8n-mcp container
+module "n8n_mcp" {
+  source         = "../../10-services-generic/docker-service"
+  container_name = local.n8n_mcp_container_name
+  image          = local.n8n_mcp_image
+  tag            = local.n8n_mcp_tag
+  volumes        = local.n8n_mcp_volumes
+  user           = "1000:1000"
+  env_vars       = local.n8n_mcp_env_vars
+  networks       = concat([module.n8n_network.name], var.networks)
+  monitoring     = local.monitoring
+  healthcheck    = local.n8n_mcp_healthcheck
+  depends_on     = [module.n8n]
 }
 
 output "service_definition" {
@@ -177,6 +230,17 @@ output "service_definition" {
     primary_port = local.n8n_internal_port
     endpoint     = "http://${local.container_name}:${local.n8n_internal_port}"
     subdomains   = ["n8n"]
+    publish_via  = "tunnel"
+  }
+}
+
+output "n8n_mcp_service_definition" {
+  description = "General service definition with optional ingress configuration for n8n-mcp"
+  value = {
+    name         = local.n8n_mcp_container_name
+    primary_port = local.n8n_mcp_internal_port
+    endpoint     = "http://${local.n8n_mcp_container_name}:${local.n8n_mcp_internal_port}"
+    subdomains   = ["n8n-mcp"]
     publish_via  = "tunnel"
   }
 }
