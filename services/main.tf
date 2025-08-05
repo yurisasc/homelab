@@ -45,6 +45,7 @@ module "crawl4ai" {
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"
+  image_tag   = "1.9.2"
 }
 
 module "glance" {
