@@ -15,6 +15,7 @@ output "service_definitions" {
     module.n8n.n8n_mcp_service_definition,
     module.nocodb.service_definition,
     module.ntfy.service_definition,
+    module.portainer.service_definition,
     module.pterodactyl_wings.service_definition,
     module.pterodactyl_panel.service_definition,
     module.searxng.service_definition

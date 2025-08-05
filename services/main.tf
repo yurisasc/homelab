@@ -77,6 +77,12 @@ module "ntfy" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "portainer" {
+  source      = "${local.module_dir}/20-services-apps/portainer"
+  volume_path = "${local.volume_host}/portainer"
+  networks    = [module.homelab_docker_network.name]
+}
+
 module "pterodactyl_panel" {
   source      = "${local.module_dir}/20-services-apps/pterodactyl/panel"
   volume_path = "${local.volume_host}/pterodactyl/panel"
