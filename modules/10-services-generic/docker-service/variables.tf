@@ -185,6 +185,12 @@ variable "privileged" {
   default     = false
 }
 
+variable "destroy_grace_seconds" {
+  description = "Grace period in seconds before the container is destroyed"
+  type        = number
+  default     = 10
+}
+
 // Logging options
 variable "log_driver" {
   description = "Log driver for the container"

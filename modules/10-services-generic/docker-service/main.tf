@@ -148,6 +148,7 @@ resource "docker_container" "service_container" {
   command     = var.command
   entrypoint  = var.entrypoint
   privileged  = var.privileged
+  destroy_grace_seconds = var.destroy_grace_seconds
 
   # Set log options
   log_driver = var.log_driver
