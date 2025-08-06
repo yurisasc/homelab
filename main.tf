@@ -19,6 +19,10 @@ module "services" {
   source = "./services"
 }
 
+locals {
+  volume_host = "${module.system_globals.volume_host}/appdata"
+}
+
 module "homelab_cloudflared_tunnel" {
   source                = "./modules/01-networking/cloudflared-tunnel"
   cloudflare_account_id = module.cloudflare_globals.cloudflare_account_id
@@ -40,7 +44,7 @@ module "homelab_caddy_proxy" {
   cloudflare_zone_id  = module.cloudflare_globals.cloudflare_zone_id
   external_ip         = module.cloudflare_globals.external_ip
   service_definitions = module.services.service_definitions
-  volume_path         = module.system_globals.volume_host
+  volume_path         = local.volume_host
   networks            = [module.services.homelab_docker_network_name]
   monitoring          = true
 }

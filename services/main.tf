@@ -1,6 +1,7 @@
 locals {
   module_dir  = "../modules"
-  volume_host = module.system_globals.volume_host
+  root_volume = module.system_globals.volume_host
+  volume_host = "${module.system_globals.volume_host}/appdata"
 }
 
 module "system_globals" {
