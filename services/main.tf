@@ -37,6 +37,13 @@ module "calibre" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "copyparty" {
+  source      = "${local.module_dir}/20-services-apps/copyparty"
+  fileshare_path = "${local.root_volume}"
+  config_path    = "${local.volume_host}/copyparty"
+  networks       = [module.homelab_docker_network.name]
+}
+
 module "crawl4ai" {
   source      = "${local.module_dir}/20-services-apps/crawl4ai"
   volume_path = "${local.volume_host}/crawl4ai"

@@ -7,6 +7,7 @@ output "service_definitions" {
     module.actualbudget.service_definition,
     module.affine.service_definition,
     module.calibre.service_definition,
+    module.copyparty.service_definition,
     module.crawl4ai.service_definition,
     module.emulatorjs.service_definition,
     module.glance.service_definition,
