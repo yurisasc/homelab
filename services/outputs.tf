@@ -11,6 +11,7 @@ output "service_definitions" {
     module.crawl4ai.service_definition,
     module.emulatorjs.service_definition,
     module.glance.service_definition,
+    module.immich.service_definition,
     module.linkwarden.service_definition,
     module.n8n.service_definition,
     module.n8n.n8n_mcp_service_definition,

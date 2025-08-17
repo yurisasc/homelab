@@ -2,6 +2,7 @@ locals {
   module_dir  = "../modules"
   root_volume = module.system_globals.volume_host
   volume_host = "${module.system_globals.volume_host}/appdata"
+  data_host   = "${module.system_globals.volume_host}/data"
 }
 
 module "system_globals" {
@@ -60,6 +61,13 @@ module "glance" {
   source      = "${local.module_dir}/20-services-apps/glance"
   volume_path = "${local.volume_host}/glance"
   networks    = [module.homelab_docker_network.name]
+}
+
+module "immich" {
+  source       = "${local.module_dir}/20-services-apps/immich"
+  appdata_path = "${local.volume_host}/immich"
+  library_path = "${local.data_host}/media/photos"
+  networks     = [module.homelab_docker_network.name]
 }
 
 module "linkwarden" {
