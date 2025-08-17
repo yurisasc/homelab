@@ -73,7 +73,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "this" {
 }
 
 module "dns_records" {
-  source = "../../10-services-generic/cloudflare-dns"
+  source  = "../../10-services-generic/cloudflare-dns"
   zone_id = var.cloudflare_zone_id
   hostnames = [
     for rule in local.all_ingress_rules :

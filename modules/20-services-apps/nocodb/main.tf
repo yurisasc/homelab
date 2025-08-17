@@ -42,7 +42,7 @@ locals {
   postgres_user        = provider::dotenv::get_by_key("DB_USERNAME", local.env_file)
   postgres_password    = provider::dotenv::get_by_key("DB_PASSWORD", local.env_file)
   postgres_db          = provider::dotenv::get_by_key("DB_DATABASE", local.env_file)
-  
+
   # Define volumes
   nocodb_volumes = [
     {
@@ -51,7 +51,7 @@ locals {
       read_only      = false
     }
   ]
-  
+
   postgres_volumes = [
     {
       host_path      = "${var.volume_path}/postgres/data"
@@ -62,9 +62,9 @@ locals {
 
   # Environment variables for postgres
   postgres_env_vars = {
-    POSTGRES_USER     = local.postgres_user
-    POSTGRES_PASSWORD = local.postgres_password
-    POSTGRES_DB       = local.postgres_db
+    POSTGRES_USER             = local.postgres_user
+    POSTGRES_PASSWORD         = local.postgres_password
+    POSTGRES_DB               = local.postgres_db
     POSTGRES_INITDB_ARGS      = "--data-checksums"
     POSTGRES_HOST_AUTH_METHOD = "trust"
   }

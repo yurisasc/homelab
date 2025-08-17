@@ -201,8 +201,8 @@ variable "log_driver" {
 variable "log_opts" {
   description = "Log driver options"
   type        = map(string)
-  default     = {
-    max-size  = "10m"
-    max-file  = "3"
+  default = {
+    max-size = "10m"
+    max-file = "3"
   }
 }

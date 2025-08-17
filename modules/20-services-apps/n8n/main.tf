@@ -133,17 +133,17 @@ locals {
   ]
 
   n8n_mcp_env_vars = {
-    MCP_MODE           = "http"
-    USE_FIXED_HTTP     = "true"
-    AUTH_TOKEN         = provider::dotenv::get_by_key("N8N_MCP_AUTH_TOKEN", local.env_file)
-    N8N_API_URL        = "http://${local.container_name}:${local.n8n_internal_port}"
-    N8N_API_KEY        = provider::dotenv::get_by_key("N8N_API_KEY", local.env_file)
-    NODE_ENV           = "production"
-    LOG_LEVEL          = "info"
-    PORT               = local.n8n_mcp_internal_port
-    NODE_DB_PATH       = "/app/data/nodes.db"
-    REBUILD_ON_START   = "false"
-    GENERIC_TIMEZONE   = module.system_globals.timezone
+    MCP_MODE         = "http"
+    USE_FIXED_HTTP   = "true"
+    AUTH_TOKEN       = provider::dotenv::get_by_key("N8N_MCP_AUTH_TOKEN", local.env_file)
+    N8N_API_URL      = "http://${local.container_name}:${local.n8n_internal_port}"
+    N8N_API_KEY      = provider::dotenv::get_by_key("N8N_API_KEY", local.env_file)
+    NODE_ENV         = "production"
+    LOG_LEVEL        = "info"
+    PORT             = local.n8n_mcp_internal_port
+    NODE_DB_PATH     = "/app/data/nodes.db"
+    REBUILD_ON_START = "false"
+    GENERIC_TIMEZONE = module.system_globals.timezone
   }
 
   n8n_mcp_healthcheck = {

@@ -24,13 +24,13 @@ variable "networks" {
 }
 
 locals {
-  container_name      = "crawl4ai"
-  image               = "unclecode/crawl4ai"
-  image_tag           = var.image_tag
-  monitoring          = true
-  service_port        = provider::dotenv::get_by_key("PORT", local.env_file)
-  env_file            = "${path.module}/.env"
-  
+  container_name = "crawl4ai"
+  image          = "unclecode/crawl4ai"
+  image_tag      = var.image_tag
+  monitoring     = true
+  service_port   = provider::dotenv::get_by_key("PORT", local.env_file)
+  env_file       = "${path.module}/.env"
+
   # Define volumes
   default_volumes = [
     {
@@ -56,15 +56,15 @@ locals {
 
   # Environment variables
   env_vars = {
-    OPENAI_API_KEY = provider::dotenv::get_by_key("OPENAI_API_KEY", local.env_file)
-    DEEPSEEK_API_KEY = provider::dotenv::get_by_key("DEEPSEEK_API_KEY", local.env_file)
+    OPENAI_API_KEY    = provider::dotenv::get_by_key("OPENAI_API_KEY", local.env_file)
+    DEEPSEEK_API_KEY  = provider::dotenv::get_by_key("DEEPSEEK_API_KEY", local.env_file)
     ANTHROPIC_API_KEY = provider::dotenv::get_by_key("ANTHROPIC_API_KEY", local.env_file)
-    GROQ_API_KEY = provider::dotenv::get_by_key("GROQ_API_KEY", local.env_file)
-    TOGETHER_API_KEY = provider::dotenv::get_by_key("TOGETHER_API_KEY", local.env_file)
-    MISTRAL_API_KEY = provider::dotenv::get_by_key("MISTRAL_API_KEY", local.env_file)
-    GEMINI_API_TOKEN = provider::dotenv::get_by_key("GEMINI_API_TOKEN", local.env_file)
+    GROQ_API_KEY      = provider::dotenv::get_by_key("GROQ_API_KEY", local.env_file)
+    TOGETHER_API_KEY  = provider::dotenv::get_by_key("TOGETHER_API_KEY", local.env_file)
+    MISTRAL_API_KEY   = provider::dotenv::get_by_key("MISTRAL_API_KEY", local.env_file)
+    GEMINI_API_TOKEN  = provider::dotenv::get_by_key("GEMINI_API_TOKEN", local.env_file)
   }
-  
+
   # Healthcheck configuration
   healthcheck = {
     test         = ["CMD", "curl", "-f", "http://localhost:${local.service_port}/health"]

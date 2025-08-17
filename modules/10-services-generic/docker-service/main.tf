@@ -71,7 +71,7 @@ resource "docker_container" "service_container" {
 
   # Set the network mode (bridge, host, etc.)
   network_mode = local.network_mode
-  
+
   # Add host mappings (entries for /etc/hosts)
   dynamic "host" {
     for_each = var.host_mappings
@@ -139,15 +139,15 @@ resource "docker_container" "service_container" {
   cpu_shares  = var.cpu_shares
 
   # Other container options
-  dns         = var.dns
-  dns_search  = var.dns_search
-  hostname    = var.hostname
-  domainname  = var.domainname
-  user        = var.user
-  working_dir = var.working_dir
-  command     = var.command
-  entrypoint  = var.entrypoint
-  privileged  = var.privileged
+  dns                   = var.dns
+  dns_search            = var.dns_search
+  hostname              = var.hostname
+  domainname            = var.domainname
+  user                  = var.user
+  working_dir           = var.working_dir
+  command               = var.command
+  entrypoint            = var.entrypoint
+  privileged            = var.privileged
   destroy_grace_seconds = var.destroy_grace_seconds
 
   # Set log options

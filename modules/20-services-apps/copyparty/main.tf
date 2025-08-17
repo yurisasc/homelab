@@ -58,17 +58,17 @@ locals {
 }
 
 module "copyparty" {
-  source            = "../../10-services-generic/docker-service"
-  container_name    = local.container_name
-  image             = local.image
-  tag               = local.tag
-  user              = local.user
-  volumes           = local.volumes
-  env_vars          = local.env_vars
-  networks          = var.networks
-  monitoring        = local.monitoring
+  source                = "../../10-services-generic/docker-service"
+  container_name        = local.container_name
+  image                 = local.image
+  tag                   = local.tag
+  user                  = local.user
+  volumes               = local.volumes
+  env_vars              = local.env_vars
+  networks              = var.networks
+  monitoring            = local.monitoring
   destroy_grace_seconds = 15
-  ports             = [
+  ports = [
     {
       internal = local.internal_port
       external = local.internal_port
