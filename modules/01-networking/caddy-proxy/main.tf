@@ -115,12 +115,12 @@ module "caddy" {
 
   ports = [
     {
-      external = "9080"
+      external = "80"
       internal = "80"
       protocol = "tcp"
     },
     {
-      external = "9443"
+      external = "443"
       internal = "443"
       protocol = "tcp"
     }
