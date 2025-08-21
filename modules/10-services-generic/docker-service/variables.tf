@@ -179,10 +179,40 @@ variable "entrypoint" {
   default     = null
 }
 
+variable "group_add" {
+  description = "Additional groups to add to the container"
+  type        = list(string)
+  default     = []
+}
+
 variable "privileged" {
   description = "Run container in privileged mode"
   type        = bool
   default     = false
+}
+
+// Linux capabilities controls
+variable "capabilities_add" {
+  description = "Linux capabilities to add to the container"
+  type        = list(string)
+  default     = []
+}
+
+variable "capabilities_drop" {
+  description = "Linux capabilities to drop from the container"
+  type        = list(string)
+  default     = []
+}
+
+// Devices to pass through to container
+variable "devices" {
+  description = "List of device mappings for the container"
+  type = list(object({
+    host_path      = string
+    container_path = string
+    permissions    = string
+  }))
+  default = []
 }
 
 variable "destroy_grace_seconds" {

@@ -144,11 +144,31 @@ resource "docker_container" "service_container" {
   hostname              = var.hostname
   domainname            = var.domainname
   user                  = var.user
+  group_add             = var.group_add
   working_dir           = var.working_dir
   command               = var.command
   entrypoint            = var.entrypoint
   privileged            = var.privileged
   destroy_grace_seconds = var.destroy_grace_seconds
+
+  # Linux capabilities controls
+  dynamic "capabilities" {
+    for_each = length(var.capabilities_add) > 0 || length(var.capabilities_drop) > 0 ? [1] : []
+    content {
+      add  = var.capabilities_add
+      drop = var.capabilities_drop
+    }
+  }
+
+  # Device mappings
+  dynamic "devices" {
+    for_each = var.devices
+    content {
+      host_path      = devices.value.host_path
+      container_path = devices.value.container_path
+      permissions    = devices.value.permissions
+    }
+  }
 
   # Set log options
   log_driver = var.log_driver
