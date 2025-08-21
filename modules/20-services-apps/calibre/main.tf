@@ -99,6 +99,6 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:${local.calibre_internal_port}"
     subdomains   = ["calibre"]
     publish_via  = "reverse_proxy"
-    proxied      = false
+    proxied      = true
   }
 }
