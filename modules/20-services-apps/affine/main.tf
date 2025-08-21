@@ -193,6 +193,6 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:${local.affine_internal_port}"
     subdomains   = ["notes"]
     publish_via  = "reverse_proxy"
-    proxied      = false
+    proxied      = true
   }
 }
