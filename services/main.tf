@@ -20,6 +20,16 @@ module "homelab_docker_network" {
   subnet     = "10.100.0.0/16"
 }
 
+// Docker network used for media services
+module "media_docker_network" {
+  source = "${local.module_dir}/01-networking/docker-network"
+
+  name       = "media-network"
+  driver     = "bridge"
+  attachable = true
+  subnet     = "10.110.0.0/16"
+}
+
 module "actualbudget" {
   source      = "${local.module_dir}/20-services-apps/actualbudget"
   volume_path = "${local.volume_host}/actual"
@@ -30,6 +40,16 @@ module "affine" {
   source      = "${local.module_dir}/20-services-apps/affine"
   volume_path = "${local.volume_host}/affine"
   networks    = [module.homelab_docker_network.name]
+}
+
+module "arr" {
+  source         = "${local.module_dir}/20-services-apps/arr"
+  volume_path    = "${local.volume_host}/arr"
+  data_path      = local.data_host
+  downloads_path = "${local.data_host}/torrents"
+  networks       = [module.media_docker_network.name]
+  proxy_networks = [module.homelab_docker_network.name]
+  qbittorrent_host = "gluetun"
 }
 
 module "calibre" {
@@ -63,11 +83,32 @@ module "glance" {
   networks    = [module.homelab_docker_network.name]
 }
 
+module "gluetun" {
+  source      = "${local.module_dir}/20-services-apps/gluetun"
+  volume_path = "${local.volume_host}/gluetun"
+  networks    = [module.media_docker_network.name]
+  ports       = [
+    # Expose qBittorrent UI to the host
+    {
+      internal = 8080
+      external = 8080
+      protocol = "tcp"
+    }
+  ]
+}
+
 module "immich" {
   source       = "${local.module_dir}/20-services-apps/immich"
   appdata_path = "${local.volume_host}/immich"
   library_path = "${local.data_host}/media/photos"
   networks     = [module.homelab_docker_network.name]
+}
+
+module "jellyfin" {
+  source      = "${local.module_dir}/20-services-apps/jellyfin"
+  volume_path = "${local.volume_host}/jellyfin"
+  data_path   = "${local.data_host}"
+  networks    = [module.media_docker_network.name, module.homelab_docker_network.name]
 }
 
 module "linkwarden" {
@@ -110,6 +151,23 @@ module "pterodactyl_wings" {
   source      = "${local.module_dir}/20-services-apps/pterodactyl/wings"
   volume_path = "${local.volume_host}/pterodactyl/wings"
   networks    = [module.homelab_docker_network.name]
+}
+
+module "qbittorrent" {
+  source         = "${local.module_dir}/20-services-apps/qbittorrent"
+  volume_path    = "${local.volume_host}/qbittorrent"
+  downloads_path = "${local.data_host}/torrents"
+  networks               = [module.media_docker_network.name]
+  connect_via_gluetun    = true
+  gluetun_container_name = "gluetun"
+  depends_on             = [module.gluetun]
+}
+
+module "sabnzbd" {
+  source         = "${local.module_dir}/20-services-apps/sabnzbd"
+  volume_path    = "${local.volume_host}/sabnzbd"
+  downloads_path = "${local.data_host}/usenet/downloads"
+  networks       = [module.media_docker_network.name, module.homelab_docker_network.name]
 }
 
 module "searxng" {

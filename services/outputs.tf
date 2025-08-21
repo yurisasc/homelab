@@ -6,12 +6,14 @@ output "service_definitions" {
   value = [
     module.actualbudget.service_definition,
     module.affine.service_definition,
+    module.arr.service_definition,
     module.calibre.service_definition,
     module.copyparty.service_definition,
     module.crawl4ai.service_definition,
     module.emulatorjs.service_definition,
     module.glance.service_definition,
     module.immich.service_definition,
+    module.jellyfin.service_definition,
     module.linkwarden.service_definition,
     module.n8n.service_definition,
     module.n8n.n8n_mcp_service_definition,
@@ -20,6 +22,8 @@ output "service_definitions" {
     module.portainer.service_definition,
     module.pterodactyl_wings.service_definition,
     module.pterodactyl_panel.service_definition,
+    module.qbittorrent.service_definition,
+    module.sabnzbd.service_definition,
     module.searxng.service_definition
   ]
 }
