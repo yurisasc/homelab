@@ -192,6 +192,6 @@ output "service_definition" {
     endpoint     = "http://${local.server_name}:${local.server_port}"
     subdomains   = ["photos"]
     publish_via  = "reverse_proxy"
-    proxied      = false
+    proxied      = true
   }
 }
