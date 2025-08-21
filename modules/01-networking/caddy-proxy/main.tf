@@ -63,10 +63,6 @@ locals {
 ])
 }
 
-resource "docker_volume" "caddy_config" {
-  name = "${local.container_name}_config"
-}
-
 // Create Caddyfile in the volume path
 resource "local_file" "caddyfile" {
   content  = local.caddyfile_content
