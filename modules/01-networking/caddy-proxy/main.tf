@@ -32,6 +32,9 @@ locals {
         custom_config         = service.caddy_config
         reverse_proxy_options = service.caddy_options
         proxied               = service.proxied
+        // Pick the correct client IP placeholder depending on whether requests come via Cloudflare
+        real_ip               = service.proxied ? "{http.request.header.CF-Connecting-IP}" : "{http.request.remote.host}"
+        forwarded_for         = service.proxied ? "{http.request.header.CF-Connecting-IP}" : "{http.request.remote.host}"
       }
     ]
   ])
@@ -53,6 +56,11 @@ locals {
     ${site.site_address} {
       tls ${var.tls_email}
       reverse_proxy ${site.endpoint} {
+        # Ensure upstream sees the real client IP and scheme/host
+        header_up X-Real-IP ${site.real_ip}
+        header_up X-Forwarded-For ${site.forwarded_for}
+        header_up X-Forwarded-Proto {http.request.scheme}
+        header_up X-Forwarded-Host {http.request.host}
         ${join("\n        ", [
     for key, value in site.reverse_proxy_options :
     "${key} ${value}"
@@ -124,4 +132,8 @@ module "caddy" {
 
   monitoring = var.monitoring
   networks   = var.networks
+
+  depends_on = [
+    local_file.caddyfile
+  ]
 }
