@@ -29,7 +29,7 @@ variable "ports" {
 variable "image_tag" {
   description = "Gluetun image tag"
   type        = string
-  default     = "v3.39.0"
+  default     = "v3.40.0"
 }
 
 locals {
