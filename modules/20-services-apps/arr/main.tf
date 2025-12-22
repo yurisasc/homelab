@@ -66,6 +66,7 @@ locals {
   prowlarr_port     = 9696
   jellyseerr_port   = 5055
   flaresolverr_port = 8191
+  cleanuparr_port   = 11011
 
   lidarr_healthcheck     = { test = ["CMD", "curl", "--fail", "http://127.0.0.1:${local.lidarr_port}/lidarr/ping"], interval = "60s", timeout = "5s", retries = 10 }
   bazarr_healthcheck     = { test = ["CMD", "curl", "--fail", "http://127.0.0.1:${local.bazarr_port}/bazarr/ping"], interval = "60s", timeout = "5s", retries = 10 }
@@ -254,6 +255,7 @@ module "cleanuparr" {
     { host_path = "${var.volume_path}/cleanuparr/ignored.txt", container_path = "/usr/ignored.txt", read_only = false },
     { host_path = "${var.volume_path}/cleanuparr/blacklist.json", container_path = "/usr/blacklist.json", read_only = false }
   ]
+  ports = [{ internal = local.cleanuparr_port, external = local.cleanuparr_port, protocol = "tcp" }]
   networks   = var.networks
   monitoring = local.monitoring
 }
