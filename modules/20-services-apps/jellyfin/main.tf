@@ -91,6 +91,6 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:${local.internal_port}"
     subdomains   = ["stream"]
     publish_via  = "reverse_proxy"
-    proxied      = true
+    proxied      = false
   }
 }
