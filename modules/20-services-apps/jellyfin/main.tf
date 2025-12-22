@@ -53,6 +53,7 @@ locals {
   env_vars = {
     # If you want to publish external URL, uncomment the following and set HOSTNAME in .env
     JELLYFIN_PublishedServerUrl = "${provider::dotenv::get_by_key("HOSTNAME", local.env_file)}/jellyfin"
+    DOCKER_MODS = "linuxserver/mods:jellyfin-opencl-intel"
   }
 
   # Intel VAAPI/QSV: map the entire /dev/dri directory (per linuxserver/jellyfin docs)
