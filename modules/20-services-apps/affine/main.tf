@@ -32,12 +32,15 @@ locals {
   migration_name       = "affine-migration-job"
   redis_name           = "affine-redis"
   postgres_name        = "affine-postgres"
-  affine_image         = "ghcr.io/yurisasc/affine-graphql"
+  indexer_name         = "affine-indexer"
+  affine_image         = "ghcr.io/yurisasc/affine"
   postgres_image       = "pgvector/pgvector"
   redis_image          = "redis"
+  indexer_image        = "manticoresearch/manticore"
   affine_tag           = provider::dotenv::get_by_key("AFFINE_REVISION", local.env_file)
   postgres_tag         = "pg16"
   redis_tag            = "latest"
+  manticore_tag        = try(provider::dotenv::get_by_key("MANTICORE_VERSION", local.env_file), "10.1.0")
   monitoring           = true
   env_file             = "${path.module}/.env"
   affine_internal_port = 3010
@@ -77,6 +80,15 @@ locals {
     }
   ]
 
+  # Manticore indexer data volume
+  indexer_volumes = [
+    {
+      host_path      = "${var.volume_path}/self-host/manticore"
+      container_path = "/var/lib/manticore"
+      read_only      = false
+    }
+  ]
+
   # Environment variables for postgres
   postgres_env_vars = {
     POSTGRES_USER             = provider::dotenv::get_by_key("DB_USERNAME", local.env_file)
@@ -90,7 +102,8 @@ locals {
   affine_env_vars = {
     REDIS_SERVER_HOST                   = local.redis_name
     DATABASE_URL                        = "postgresql://${provider::dotenv::get_by_key("DB_USERNAME", local.env_file)}:${provider::dotenv::get_by_key("DB_PASSWORD", local.env_file)}@${local.postgres_name}:5432/${provider::dotenv::get_by_key("DB_DATABASE", local.env_file)}"
-    AFFINE_INDEXER_ENABLED              = "false"
+    AFFINE_INDEXER_ENABLED              = "true"
+    AFFINE_INDEXER_SEARCH_ENDPOINT      = "http://${local.indexer_name}:9308"
     AFFINE_SERVER_HTTPS                 = provider::dotenv::get_by_key("AFFINE_SERVER_HTTPS", local.env_file)
     AFFINE_SERVER_HOST                  = provider::dotenv::get_by_key("AFFINE_SERVER_HOST", local.env_file)
     AFFINE_SERVER_NAME                  = provider::dotenv::get_by_key("AFFINE_SERVER_NAME", local.env_file)
@@ -119,6 +132,15 @@ locals {
   # Healthcheck configuration for Postgres
   postgres_healthcheck = {
     test         = ["CMD", "pg_isready", "-U", provider::dotenv::get_by_key("DB_USERNAME", local.env_file), "-d", provider::dotenv::get_by_key("DB_DATABASE", local.env_file)]
+    interval     = "10s"
+    timeout      = "5s"
+    retries      = 5
+    start_period = "5s"
+  }
+
+  # Healthcheck configuration for Manticore indexer
+  indexer_healthcheck = {
+    test         = ["CMD", "wget", "-O-", "http://127.0.0.1:9308"]
     interval     = "10s"
     timeout      = "5s"
     retries      = 5
@@ -157,6 +179,18 @@ module "postgres" {
   healthcheck    = local.postgres_healthcheck
 }
 
+# Create the Manticore indexer container
+module "indexer" {
+  source         = "../../10-services-generic/docker-service"
+  container_name = local.indexer_name
+  image          = local.indexer_image
+  tag            = local.manticore_tag
+  volumes        = local.indexer_volumes
+  networks       = [module.affine_network.name]
+  monitoring     = local.monitoring
+  healthcheck    = local.indexer_healthcheck
+}
+
 # Create the migration job container
 module "migration" {
   source         = "../../10-services-generic/docker-service"
@@ -182,7 +216,7 @@ module "affine" {
   env_vars       = local.affine_env_vars
   networks       = concat([module.affine_network.name], var.networks)
   monitoring     = local.monitoring
-  depends_on     = [module.postgres, module.redis, module.migration]
+  depends_on     = [module.postgres, module.redis, module.migration, module.indexer]
 }
 
 output "service_definition" {
@@ -193,6 +227,6 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:${local.affine_internal_port}"
     subdomains   = ["notes"]
     publish_via  = "reverse_proxy"
-    proxied      = true
+    proxied      = false
   }
 }
