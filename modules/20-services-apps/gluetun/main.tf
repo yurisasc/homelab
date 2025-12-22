@@ -43,8 +43,11 @@ locals {
   env_vars = {
     VPN_SERVICE_PROVIDER     = try(provider::dotenv::get_by_key("VPN_SERVICE_PROVIDER", local.env_file), "mullvad")
     VPN_TYPE                 = try(provider::dotenv::get_by_key("VPN_TYPE", local.env_file), "wireguard")
-    WIREGUARD_PRIVATE_KEY    = provider::dotenv::get_by_key("WIREGUARD_PRIVATE_KEY", local.env_file)
-    WIREGUARD_ADDRESSES      = provider::dotenv::get_by_key("WIREGUARD_ADDRESSES", local.env_file)
+    WIREGUARD_PRIVATE_KEY    = try(provider::dotenv::get_by_key("WIREGUARD_PRIVATE_KEY", local.env_file), "")
+    WIREGUARD_ADDRESSES      = try(provider::dotenv::get_by_key("WIREGUARD_ADDRESSES", local.env_file), "")
+    WIREGUARD_PUBLIC_KEY     = try(provider::dotenv::get_by_key("WIREGUARD_PUBLIC_KEY", local.env_file), "")
+    WIREGUARD_ENDPOINT_IP    = try(provider::dotenv::get_by_key("WIREGUARD_ENDPOINT_IP", local.env_file), "")
+    WIREGUARD_ENDPOINT_PORT  = try(provider::dotenv::get_by_key("WIREGUARD_ENDPOINT_PORT", local.env_file), "")
     SERVER_CITIES            = try(provider::dotenv::get_by_key("SERVER_CITIES", local.env_file), "")
     SERVER_COUNTRIES         = try(provider::dotenv::get_by_key("SERVER_COUNTRIES", local.env_file), "")
     SERVER_HOSTNAMES         = try(
