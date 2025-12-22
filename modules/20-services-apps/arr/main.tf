@@ -49,15 +49,25 @@ locals {
   decluttarr_name   = "decluttarr"
 
   sonarr_image       = "lscr.io/linuxserver/sonarr"
+  sonarr_tag         = "4.0.16"
   radarr_image       = "lscr.io/linuxserver/radarr"
+  radarr_tag         = "6.0.4"
   lidarr_image       = "lscr.io/linuxserver/lidarr"
+  lidarr_tag         = "3.1.0"
   bazarr_image       = "lscr.io/linuxserver/bazarr"
+  bazarr_tag         = "1.5.3"
   prowlarr_image     = "lscr.io/linuxserver/prowlarr"
+  prowlarr_tag       = "2.3.0"
   jellyseerr_image   = "ghcr.io/fallenbagel/jellyseerr"
+  jellyseerr_tag     = "2.7.3"
   flaresolverr_image = "21hsmw/flaresolverr"
+  flaresolverr_tag   = "nodriver"
   unpackerr_image    = "ghcr.io/unpackerr/unpackerr"
+  unpackerr_tag      = "v0.14.5"
   cleanuparr_image   = "ghcr.io/cleanuparr/cleanuparr"
+  cleanuparr_tag     = "2.4.7"
   decluttarr_image   = "ghcr.io/manimatter/decluttarr"
+  decluttarr_tag     = "v2.0.0"
 
   sonarr_port       = 8989
   radarr_port       = 7878
@@ -142,6 +152,7 @@ module "sonarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.sonarr_name
   image          = local.sonarr_image
+  tag            = local.sonarr_tag
   volumes = [
     { host_path = "${var.volume_path}/sonarr", container_path = "/config", read_only = false },
     { host_path = var.data_path, container_path = "/data", read_only = false }
@@ -156,6 +167,7 @@ module "radarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.radarr_name
   image          = local.radarr_image
+  tag            = local.radarr_tag
   volumes = [
     { host_path = "${var.volume_path}/radarr", container_path = "/config", read_only = false },
     { host_path = var.data_path, container_path = "/data", read_only = false }
@@ -170,6 +182,7 @@ module "lidarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.lidarr_name
   image          = local.lidarr_image
+  tag            = local.lidarr_tag
   volumes = [
     { host_path = "${var.volume_path}/lidarr", container_path = "/config", read_only = false },
     { host_path = var.data_path, container_path = "/data", read_only = false }
@@ -185,6 +198,7 @@ module "bazarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.bazarr_name
   image          = local.bazarr_image
+  tag            = local.bazarr_tag
   volumes = [
     { host_path = "${var.volume_path}/bazarr/config", container_path = "/config", read_only = false },
     { host_path = var.data_path, container_path = "/data", read_only = false }
@@ -200,6 +214,7 @@ module "prowlarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.prowlarr_name
   image          = local.prowlarr_image
+  tag            = local.prowlarr_tag
   volumes = [
     { host_path = "${var.volume_path}/prowlarr", container_path = "/config", read_only = false }
   ]
@@ -213,6 +228,7 @@ module "jellyseerr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.jellyseerr_name
   image          = local.jellyseerr_image
+  tag            = local.jellyseerr_tag
   volumes        = [{ host_path = "${var.volume_path}/jellyseerr", container_path = "/app/config", read_only = false }]
   env_vars       = local.jellyseerr_env
   networks       = concat(var.networks, var.proxy_networks)
@@ -226,7 +242,7 @@ module "flaresolverr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.flaresolverr_name
   image          = local.flaresolverr_image
-  tag            = "nodriver"
+  tag            = local.flaresolverr_tag
   env_vars       = local.flaresolverr_env
   networks       = var.networks
   monitoring     = local.monitoring
@@ -238,6 +254,7 @@ module "unpackerr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.unpackerr_name
   image          = local.unpackerr_image
+  tag            = local.unpackerr_tag
   env_vars       = local.unpackerr_env
   volumes        = [{ host_path = var.downloads_path, container_path = "/data/torrents", read_only = false }]
   networks       = var.networks
@@ -249,6 +266,7 @@ module "cleanuparr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.cleanuparr_name
   image          = local.cleanuparr_image
+  tag            = local.cleanuparr_tag
   env_vars       = local.cleanuparr_env
   volumes = [
     { host_path = "${var.volume_path}/cleanuparr/logs", container_path = "/var/logs", read_only = false },
@@ -264,6 +282,7 @@ module "decluttarr" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.decluttarr_name
   image          = local.decluttarr_image
+  tag            = local.decluttarr_tag
   env_vars       = local.decluttarr_env
   networks       = var.networks
   monitoring     = local.monitoring

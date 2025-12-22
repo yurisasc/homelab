@@ -2,6 +2,12 @@ variable "volume_path" {
   description = "Base directory for Sabnzbd config"
   type        = string
 }
+ 
+variable "image_tag" {
+  description = "Tag of the Sabnzbd image to use"
+  type        = string
+  default     = ""
+}
 variable "downloads_path" {
   description = "Directory for downloads mounted at /downloads"
   type        = string
@@ -15,7 +21,7 @@ variable "networks" {
 locals {
   container_name = "sabnzbd"
   image          = "lscr.io/linuxserver/sabnzbd"
-  tag            = "latest"
+  image_tag      = var.image_tag != "" ? var.image_tag : "latest"
   monitoring     = true
   internal_port  = 8080
 
@@ -48,7 +54,7 @@ module "sabnzbd" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.container_name
   image          = local.image
-  tag            = local.tag
+  tag            = local.image_tag
   env_vars       = local.env_vars
   volumes        = local.volumes
   networks       = var.networks

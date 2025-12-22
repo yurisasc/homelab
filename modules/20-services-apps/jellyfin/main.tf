@@ -8,6 +8,11 @@ variable "volume_path" {
   description = "Base directory for Jellyfin config"
   type        = string
 }
+variable "image_tag" {
+  description = "Tag of the Jellyfin image to use"
+  type        = string
+  default     = ""
+}
 variable "data_path" {
   description = "Base directory for media data mounted at /data"
   type        = string
@@ -23,7 +28,7 @@ locals {
   monitoring     = true
   container_name = "jellyfin"
   image          = "lscr.io/linuxserver/jellyfin"
-  tag            = "latest"
+  image_tag      = var.image_tag != "" ? var.image_tag : "latest"
   internal_port  = 8096
 
   # UDP ports for DLNA/auto-discovery
@@ -75,7 +80,7 @@ module "jellyfin" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.container_name
   image          = local.image
-  tag            = local.tag
+  tag            = local.image_tag
   volumes        = local.volumes
   env_vars       = local.env_vars
   networks       = var.networks

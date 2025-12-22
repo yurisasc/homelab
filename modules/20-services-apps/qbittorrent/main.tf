@@ -2,6 +2,12 @@ variable "volume_path" {
   description = "Base directory for qBittorrent config"
   type        = string
 }
+ 
+variable "image_tag" {
+  description = "Tag of the qBittorrent image to use"
+  type        = string
+  default     = ""
+}
 variable "downloads_path" {
   description = "Directory for downloads mounted at /data/torrents"
   type        = string
@@ -28,7 +34,7 @@ variable "gluetun_container_name" {
 locals {
   container_name = "qbittorrent"
   image          = "lscr.io/linuxserver/qbittorrent"
-  tag            = "libtorrentv1"
+  image_tag      = var.image_tag != "" ? var.image_tag : "libtorrentv1"
   monitoring     = true
   internal_port  = 8080
 
@@ -66,7 +72,7 @@ module "qbittorrent" {
   source         = "../../10-services-generic/docker-service"
   container_name = local.container_name
   image          = local.image
-  tag            = local.tag
+  tag            = local.image_tag
   env_vars       = local.env_vars
   volumes        = local.volumes
   network_mode   = local.network_mode
