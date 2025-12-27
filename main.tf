@@ -47,4 +47,9 @@ module "homelab_caddy_proxy" {
   volume_path         = local.volume_host
   networks            = [module.services.homelab_docker_network_name]
   monitoring          = true
+
+  # On-demand TLS for Dokploy-managed domains
+  enable_ondemand_tls      = true
+  ask_endpoint_url         = module.services.caddy_ask_endpoint
+  dokploy_traefik_endpoint = module.services.dokploy_traefik_endpoint
 }

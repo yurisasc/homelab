@@ -54,6 +54,13 @@ module "arr" {
   qbittorrent_host = "gluetun"
 }
 
+module "caddy_ask_service" {
+  source         = "${local.module_dir}/01-networking/caddy-ask-service"
+  volume_path    = local.volume_host
+  allowlist_path = "${local.volume_host}/caddy/allowed-domains.txt"
+  networks       = [module.homelab_docker_network.name]
+}
+
 module "calibre" {
   source      = "${local.module_dir}/20-services-apps/calibre"
   volume_path = "${local.volume_host}/calibre"
@@ -75,6 +82,14 @@ module "crawl4ai" {
   networks    = [module.homelab_docker_network.name]
   image_tag   = "0.7.8"
 }
+
+module "dokploy" {
+  source      = "${local.module_dir}/20-services-apps/dokploy"
+  volume_path = "${local.volume_host}/dokploy"
+  networks    = [module.homelab_docker_network.name]
+  image_tag   = "latest"
+}
+
 module "emulatorjs" {
   source      = "${local.module_dir}/20-services-apps/emulatorjs"
   volume_path = "${local.volume_host}/emulatorjs"

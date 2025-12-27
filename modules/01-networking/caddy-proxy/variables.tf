@@ -61,3 +61,21 @@ variable "external_ip" {
   type        = string
   default     = ""
 }
+
+variable "enable_ondemand_tls" {
+  description = "Enable on-demand TLS for dynamic domain routing (requires ask_endpoint_url)"
+  type        = bool
+  default     = false
+}
+
+variable "ask_endpoint_url" {
+  description = "URL of the ask endpoint for on-demand TLS permission checks (e.g., http://caddy-ask:8080/cgi-bin/allow)"
+  type        = string
+  default     = ""
+}
+
+variable "dokploy_traefik_endpoint" {
+  description = "Internal endpoint for Dokploy's Traefik (e.g., http://dokploy-traefik:80)"
+  type        = string
+  default     = ""
+}
