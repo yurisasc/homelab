@@ -11,6 +11,7 @@ output "service_definitions" {
     module.copyparty.service_definition,
     module.crawl4ai.service_definition,
     module.emulatorjs.service_definition,
+    module.fossflow.service_definition,
     module.glance.service_definition,
     module.immich.service_definition,
     module.jellyfin.service_definition,
@@ -26,6 +27,21 @@ output "service_definitions" {
     module.sabnzbd.service_definition,
     module.searxng.service_definition
   ]
+}
+
+output "dokploy_traefik_endpoint" {
+  description = "Internal Traefik endpoint for Dokploy on-demand TLS routing"
+  value       = module.dokploy.traefik_endpoint
+}
+
+output "dokploy_network_name" {
+  description = "Name of the Dokploy internal network"
+  value       = module.dokploy.dokploy_network_name
+}
+
+output "caddy_ask_endpoint" {
+  description = "Internal endpoint for the Caddy on-demand TLS ask service"
+  value       = module.caddy_ask_service.endpoint
 }
 
 output "homelab_docker_network_name" {
