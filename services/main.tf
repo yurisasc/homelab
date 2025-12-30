@@ -83,6 +83,13 @@ module "crawl4ai" {
   image_tag   = "0.7.8"
 }
 
+module "dify" {
+  source      = "${local.module_dir}/20-services-apps/dify"
+  volume_path = "${local.volume_host}/dify"
+  networks    = [module.homelab_docker_network.name]
+  image_tag   = "1.11.2"
+}
+
 module "dokploy" {
   source      = "${local.module_dir}/20-services-apps/dokploy"
   volume_path = "${local.volume_host}/dokploy"

@@ -130,6 +130,7 @@ Make sure you are in the root directory of the project (`homelab/`).
 | `calibre-web-automated` | Calibre Web library UI | Reverse proxy | Direct ingress control |
 | `copyparty` | File sharing / personal drive | Cloudflare Tunnel | Public access without opening inbound ports |
 | `crawl4ai` | Crawling / automation service | Internal | Not published via ingress |
+| `dify` | AI/LLM workflow platform | Cloudflare Tunnel | Public access without opening inbound ports |
 | `dokploy` | App deployment dashboard | Cloudflare Tunnel | Admin UI reachable without opening inbound ports |
 | `emulatorjs` | Retro game emulator UI | Internal | Not published via ingress |
 | `fossflow` | Isometric diagramming tool | Cloudflare Tunnel | Public access without opening inbound ports |

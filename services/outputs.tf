@@ -10,6 +10,7 @@ output "service_definitions" {
     module.calibre.service_definition,
     module.copyparty.service_definition,
     module.crawl4ai.service_definition,
+    module.dify.service_definition,
     module.dokploy.service_definition,
     module.emulatorjs.service_definition,
     module.fossflow.service_definition,
