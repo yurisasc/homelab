@@ -20,6 +20,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 variable "image_tag" {
   description = "The tag of the Dokploy Docker image to use"
   type        = string
@@ -94,7 +100,7 @@ module "dokploy_postgres" {
     }
   ]
 
-  networks   = concat([docker_network.dokploy_network.name], var.networks)
+  networks   = concat([docker_network.dokploy_network.name], var.backup_networks)
   monitoring = local.monitoring
 }
 
@@ -252,4 +258,18 @@ output "traefik_endpoint" {
 output "dokploy_network_name" {
   description = "Name of the Dokploy internal network"
   value       = docker_network.dokploy_network.name
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for Dokploy"
+  value = {
+    name         = "dokploy"
+    type         = "postgres"
+    host         = local.postgres_name
+    port         = local.postgres_port
+    database     = "dokploy"
+    username     = "dokploy"
+    password_env = "DOKPLOY_POSTGRES_PASSWORD"  # Env var name in Dokploy .env
+    env_file     = local.env_file                 # Path to Dokploy .env file
+  }
 }

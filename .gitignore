@@ -8,3 +8,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 .env
+backup-sets.json

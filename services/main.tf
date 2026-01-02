@@ -30,6 +30,16 @@ module "media_docker_network" {
   subnet     = "10.110.0.0/16"
 }
 
+// Docker network used for backup - connects backup container to database containers
+module "backup_docker_network" {
+  source = "${local.module_dir}/01-networking/docker-network"
+
+  name       = "backup-network"
+  driver     = "bridge"
+  attachable = true
+  subnet     = "10.120.0.0/16"
+}
+
 module "actualbudget" {
   source      = "${local.module_dir}/20-services-apps/actualbudget"
   volume_path = "${local.volume_host}/actual"
@@ -38,10 +48,11 @@ module "actualbudget" {
 }
 
 module "affine" {
-  source      = "${local.module_dir}/20-services-apps/affine"
-  volume_path = "${local.volume_host}/affine"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "canary-2430bb4"
+  source          = "${local.module_dir}/20-services-apps/affine"
+  volume_path     = "${local.volume_host}/affine"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "canary-2430bb4"
 }
 
 module "arr" {
@@ -84,17 +95,19 @@ module "crawl4ai" {
 }
 
 module "dify" {
-  source      = "${local.module_dir}/20-services-apps/dify"
-  volume_path = "${local.volume_host}/dify"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "1.11.2"
+  source          = "${local.module_dir}/20-services-apps/dify"
+  volume_path     = "${local.volume_host}/dify"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "1.11.2"
 }
 
 module "dokploy" {
-  source      = "${local.module_dir}/20-services-apps/dokploy"
-  volume_path = "${local.volume_host}/dokploy"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "latest"
+  source          = "${local.module_dir}/20-services-apps/dokploy"
+  volume_path     = "${local.volume_host}/dokploy"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "latest"
 }
 
 module "emulatorjs" {
@@ -134,11 +147,12 @@ module "gluetun" {
 }
 
 module "immich" {
-  source       = "${local.module_dir}/20-services-apps/immich"
-  appdata_path = "${local.volume_host}/immich"
-  library_path = "${local.data_host}/media/photos"
-  networks     = [module.homelab_docker_network.name]
-  image_tag    = "v2.4.1"
+  source          = "${local.module_dir}/20-services-apps/immich"
+  appdata_path    = "${local.volume_host}/immich"
+  library_path    = "${local.data_host}/media/photos"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "v2.4.1"
 }
 
 module "jellyfin" {
@@ -150,24 +164,27 @@ module "jellyfin" {
 }
 
 module "linkwarden" {
-  source      = "${local.module_dir}/20-services-apps/linkwarden"
-  volume_path = "${local.volume_host}/linkwarden"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "v2.13.2"
+  source          = "${local.module_dir}/20-services-apps/linkwarden"
+  volume_path     = "${local.volume_host}/linkwarden"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "v2.13.5"
 }
 
 module "n8n" {
-  source      = "${local.module_dir}/20-services-apps/n8n"
-  volume_path = "${local.volume_host}/n8n"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "2.0.3"
+  source          = "${local.module_dir}/20-services-apps/n8n"
+  volume_path     = "${local.volume_host}/n8n"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "2.0.3"
 }
 
 module "nocodb" {
-  source      = "${local.module_dir}/20-services-apps/nocodb"
-  volume_path = "${local.volume_host}/nocodb"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "0.265.1"
+  source          = "${local.module_dir}/20-services-apps/nocodb"
+  volume_path     = "${local.volume_host}/nocodb"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "0.265.1"
 }
 
 module "ntfy" {
@@ -185,10 +202,11 @@ module "portainer" {
 }
 
 module "pterodactyl_panel" {
-  source      = "${local.module_dir}/20-services-apps/pterodactyl/panel"
-  volume_path = "${local.volume_host}/pterodactyl/panel"
-  networks    = [module.homelab_docker_network.name]
-  image_tag   = "v1.11.11"
+  source          = "${local.module_dir}/20-services-apps/pterodactyl/panel"
+  volume_path     = "${local.volume_host}/pterodactyl/panel"
+  networks        = [module.homelab_docker_network.name]
+  backup_networks = [module.backup_docker_network.name]
+  image_tag       = "v1.11.11"
 }
 
 module "pterodactyl_wings" {
@@ -222,4 +240,27 @@ module "searxng" {
   volume_path = "${local.volume_host}/searxng"
   networks    = [module.homelab_docker_network.name]
   image_tag   = "2025.12.19-8bf600cc6"
+}
+
+locals {
+  # Collect all db_backup_configs from services (filter out nulls)
+  db_backup_configs = [
+    for config in [
+      try(module.immich.db_backup_config, null),
+      try(module.dify.db_backup_config, null),
+      try(module.linkwarden.db_backup_config, null),
+      try(module.nocodb.db_backup_config, null),
+      try(module.affine.db_backup_config, null),
+      try(module.n8n.db_backup_config, null),
+      try(module.dokploy.db_backup_config, null),
+      try(module.pterodactyl_panel.db_backup_config, null),
+    ] : config if config != null
+  ]
+}
+
+module "backup" {
+  source = "${local.module_dir}/20-services-apps/backup"
+
+  db_configs = local.db_backup_configs
+  networks   = [module.backup_docker_network.name]
 }

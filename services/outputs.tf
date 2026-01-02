@@ -50,3 +50,19 @@ output "homelab_docker_network_name" {
   description = "The name of the Docker network"
   value       = module.homelab_docker_network.name
 }
+
+output "db_backup_configs" {
+  description = "Aggregated database backup configurations from all services"
+  value = [
+    for cfg in [
+      try(module.immich.db_backup_config, null),
+      try(module.dify.db_backup_config, null),
+      try(module.linkwarden.db_backup_config, null),
+      try(module.nocodb.db_backup_config, null),
+      try(module.affine.db_backup_config, null),
+      try(module.n8n.db_backup_config, null),
+      try(module.dokploy.db_backup_config, null),
+      try(module.pterodactyl_panel.db_backup_config, null),
+    ] : cfg if cfg != null
+  ]
+}

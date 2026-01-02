@@ -1,0 +1,29 @@
+[
+  {
+    "name": "appdata",
+    "paths": ["/data/appdata"],
+    "excludes": ["**/cache/**", "**/Cache/**", "**/tmp/**", "**/logs/**", "**/*.log", "**/transcode/**"],
+    "frequency": "daily",
+    "keep_daily": 7,
+    "keep_weekly": 4,
+    "keep_monthly": 3
+  },
+  {
+    "name": "photos",
+    "paths": ["/data/media/photos"],
+    "excludes": [],
+    "frequency": "weekly",
+    "keep_daily": 0,
+    "keep_weekly": 8,
+    "keep_monthly": 12
+  },
+  {
+    "name": "homelab",
+    "paths": ["/home/user/Development/homelab"],
+    "excludes": ["**/.terraform/**", "**/node_modules/**"],
+    "frequency": "daily",
+    "keep_daily": 7,
+    "keep_weekly": 4,
+    "keep_monthly": 3
+  }
+]

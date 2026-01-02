@@ -23,6 +23,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 module "smtp" {
   source = "../../00-globals/smtp"
 }
@@ -174,7 +180,7 @@ module "postgres" {
   tag            = local.postgres_tag
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
-  networks       = [module.affine_network.name]
+  networks       = concat([module.affine_network.name], var.backup_networks)
   monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
@@ -228,5 +234,19 @@ output "service_definition" {
     subdomains   = ["notes"]
     publish_via  = "reverse_proxy"
     proxied      = false
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for Affine"
+  value = {
+    name         = "affine"
+    type         = "postgres"
+    host         = local.postgres_name
+    port         = 5432
+    database     = provider::dotenv::get_by_key("DB_DATABASE", local.env_file)
+    username     = provider::dotenv::get_by_key("DB_USERNAME", local.env_file)
+    password_env = "DB_PASSWORD"   # Env var name in Affine .env
+    env_file     = local.env_file   # Path to Affine .env file
   }
 }

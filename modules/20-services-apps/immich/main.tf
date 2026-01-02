@@ -28,6 +28,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 locals {
   env_file   = "${path.module}/.env"
   monitoring = true
@@ -148,7 +154,7 @@ module "postgres" {
   tag            = local.postgres_tag
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
-  networks       = [module.immich_network.name]
+  networks       = concat([module.immich_network.name], var.backup_networks)
   monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
@@ -193,5 +199,19 @@ output "service_definition" {
     subdomains   = ["photos"]
     publish_via  = "reverse_proxy"
     proxied      = true
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for Immich"
+  value = {
+    name         = "immich"
+    type         = "postgres"
+    host         = local.postgres_name
+    port         = 5432
+    database     = provider::dotenv::get_by_key("DB_DATABASE_NAME", local.env_file)
+    username     = provider::dotenv::get_by_key("DB_USERNAME", local.env_file)
+    password_env = "DB_PASSWORD"         # Env var name in Immich .env
+    env_file     = local.env_file         # Path to Immich .env file
   }
 }

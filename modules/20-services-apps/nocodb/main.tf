@@ -29,6 +29,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 locals {
   container_name       = "nocodb"
   postgres_name        = "nocodb-postgres"
@@ -99,7 +105,7 @@ module "postgres" {
   tag            = local.postgres_tag
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
-  networks       = [module.nocodb_network.name]
+  networks       = concat([module.nocodb_network.name], var.backup_networks)
   monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
@@ -125,5 +131,19 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:${local.nocodb_internal_port}"
     subdomains   = ["db"]
     publish_via  = "tunnel"
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for NocoDB"
+  value = {
+    name         = "nocodb"
+    type         = "postgres"
+    host         = local.postgres_name
+    port         = 5432
+    database     = local.postgres_db
+    username     = local.postgres_user
+    password_env = "DB_PASSWORD"   # Env var name in NocoDB .env
+    env_file     = local.env_file   # Path to NocoDB .env file
   }
 }

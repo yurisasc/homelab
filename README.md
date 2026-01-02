@@ -148,6 +148,7 @@ Make sure you are in the root directory of the project (`homelab/`).
 | `qbittorrent` | Torrent client UI | Internal | Not published via ingress; routed through VPN |
 | `sabnzbd` | Usenet client | Cloudflare Tunnel | Public access without opening inbound ports |
 | `searxng` | Metasearch engine | Cloudflare Tunnel | Public access without opening inbound ports |
+| `homelab-backup` | Automated Restic backups + DB dumps | Internal | Infrastructure service; scheduled execution |
 | `cloudflared-homelab` | Cloudflare Tunnel ingress | Ingress | Publishes services via tunnel |
 | `caddy-proxy` | Reverse proxy + TLS (including on-demand TLS) | Ingress | Publishes services via reverse proxy and handles Dokploy on-demand TLS |
 | `caddy-ask` | On-demand TLS ask endpoint (allowlist) | Internal | Internal-only; called by Caddy during on-demand certificate issuance |
@@ -186,6 +187,7 @@ This project aims for a high degree of modularity:
 * **`modules/01-networking/`**: Contains modules for creating Docker networks, managing Cloudflare DNS records, deploying `cloudflared` tunnels, and running ingress services (e.g. Caddy).
 * **`modules/10-services-generic/`**: A reusable module to deploy any generic module with common configurations (Docker container setup, etc.).
 * **`modules/20-services-apps/`**: Contains "wrapper" modules for specific applications (e.g., Jellyfin, Affine, Nginx Proxy Manager). These modules typically call the generic `docker-service` module with pre-filled defaults and simpler inputs specific to that application.
+* **`modules/20-services-apps/backup/`**: A centralized backup solution using Restic and automated database dumps.
 
 Dokploy-specific notes live here:
 
@@ -194,6 +196,4 @@ Dokploy-specific notes live here:
 Each module should have its own `README.md` (eventually) detailing its purpose, inputs, and outputs.
 
 ## Future Plans
-
-1.  **Keep services codified:** Continue converting any remaining ad-hoc containers into OpenTofu modules.
-2.  **Volume backups:** Add a backup solution for persisted volumes under `appdata/` (e.g. scheduled backups + retention + off-host storage).
+1.  **Monitoring Dashboards:** Add Grafana/Prometheus for better visibility into service health and backup status.

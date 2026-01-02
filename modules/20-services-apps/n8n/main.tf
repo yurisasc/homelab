@@ -23,6 +23,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 module "system_globals" {
   source = "../../00-globals/system"
 }
@@ -171,7 +177,7 @@ module "postgres" {
   volumes        = local.database_volumes
   user           = "1000:1000"
   env_vars       = local.database_env_vars
-  networks       = [module.n8n_network.name]
+  networks       = concat([module.n8n_network.name], var.backup_networks)
   monitoring     = local.monitoring
   healthcheck    = local.database_healthcheck
 }
@@ -242,5 +248,19 @@ output "n8n_mcp_service_definition" {
     endpoint     = "http://${local.n8n_mcp_container_name}:${local.n8n_mcp_internal_port}"
     subdomains   = ["n8n-mcp"]
     publish_via  = "tunnel"
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for n8n"
+  value = {
+    name         = "n8n"
+    type         = "postgres"
+    host         = local.database_name
+    port         = 5432
+    database     = provider::dotenv::get_by_key("POSTGRES_DB", local.env_file)
+    username     = provider::dotenv::get_by_key("POSTGRES_NON_ROOT_USER", local.env_file)
+    password_env = "POSTGRES_NON_ROOT_PASSWORD"  # Env var name in n8n .env
+    env_file     = local.env_file                  # Path to n8n .env file
   }
 }

@@ -23,6 +23,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 variable "subdomain" {
   description = "The subdomain to use for the Dify service"
   type        = string
@@ -267,7 +273,7 @@ module "postgres" {
     POSTGRES_DB       = "dify"
     PGDATA            = "/var/lib/postgresql/data/pgdata"
   }
-  networks    = [module.dify_network.name]
+  networks    = concat([module.dify_network.name], var.backup_networks)
   monitoring  = local.monitoring
   healthcheck = local.postgres_healthcheck
 }
@@ -574,5 +580,19 @@ output "service_definition" {
     endpoint     = "http://dify-nginx:80"
     subdomains   = [var.subdomain]
     publish_via  = "tunnel"
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for Dify"
+  value = {
+    name         = "dify"
+    type         = "postgres"
+    host         = local.postgres_name
+    port         = 5432
+    database     = "dify"
+    username     = "postgres"
+    password_env = "DIFY_DB_PASSWORD"  # Env var name in Dify .env
+    env_file     = local.env_file       # Path to Dify .env file
   }
 }

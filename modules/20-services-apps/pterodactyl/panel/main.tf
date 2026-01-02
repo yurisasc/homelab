@@ -27,6 +27,12 @@ variable "networks" {
   default     = []
 }
 
+variable "backup_networks" {
+  description = "List of networks for backup access to database"
+  type        = list(string)
+  default     = []
+}
+
 locals {
   container_name = "pterodactyl-panel"
   database_name  = "pterodactyl-db"
@@ -124,7 +130,7 @@ module "database" {
   tag            = local.database_tag
   volumes        = local.database_volumes
   env_vars       = local.database_env_vars
-  networks       = [module.pterodactyl_network.name]
+  networks       = concat([module.pterodactyl_network.name], var.backup_networks)
   command        = ["--default-authentication-plugin=mysql_native_password"]
   monitoring     = local.monitoring
 }
@@ -160,5 +166,19 @@ output "service_definition" {
     endpoint     = "http://${local.container_name}:80"
     subdomains   = ["gameservers"]
     publish_via  = "tunnel"
+  }
+}
+
+output "db_backup_config" {
+  description = "Database backup configuration for Pterodactyl Panel"
+  value = {
+    name         = "pterodactyl"
+    type         = "mysql"
+    host         = local.database_name
+    port         = 3306
+    database     = provider::dotenv::get_by_key("MYSQL_DATABASE", local.env_file)
+    username     = provider::dotenv::get_by_key("MYSQL_USER", local.env_file)
+    password_env = "MYSQL_PASSWORD"  # Env var name in Pterodactyl .env
+    env_file     = local.env_file     # Path to Pterodactyl .env file
   }
 }
