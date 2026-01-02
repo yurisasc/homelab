@@ -43,7 +43,7 @@ locals {
   n8n_tag           = var.image_tag != "" ? var.image_tag : "latest"
   database_tag      = "16"
   redis_tag         = "7-alpine"
-  monitoring        = true
+
   env_file          = "${path.module}/.env"
   n8n_internal_port = 5678
 
@@ -178,7 +178,6 @@ module "postgres" {
   user           = "1000:1000"
   env_vars       = local.database_env_vars
   networks       = concat([module.n8n_network.name], var.backup_networks)
-  monitoring     = local.monitoring
   healthcheck    = local.database_healthcheck
 }
 
@@ -195,7 +194,6 @@ module "redis" {
     REDIS_PASSWORD = "redis"
   }
   networks    = [module.n8n_network.name]
-  monitoring  = local.monitoring
   command     = ["redis-server", "--requirepass", "redis", "--user", "redis", "on", ">redis", "~*", "+@all"]
   healthcheck = local.redis_healthcheck
 }
@@ -210,7 +208,6 @@ module "n8n" {
   user           = "1000:1000"
   env_vars       = local.n8n_env_vars
   networks       = concat([module.n8n_network.name], var.networks)
-  monitoring     = local.monitoring
   depends_on     = [module.postgres, module.redis]
 }
 
@@ -224,7 +221,6 @@ module "n8n_mcp" {
   user           = "1000:1000"
   env_vars       = local.n8n_mcp_env_vars
   networks       = concat([module.n8n_network.name], var.networks)
-  monitoring     = local.monitoring
   healthcheck    = local.n8n_mcp_healthcheck
   depends_on     = [module.n8n]
 }

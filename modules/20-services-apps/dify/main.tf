@@ -80,7 +80,6 @@ locals {
   weaviate_tag      = "1.27.0"
   plugin_daemon_tag = "0.5.2-local"
 
-  monitoring       = true
   env_file         = "${path.module}/.env"
   web_port         = 3000
   api_port         = 5001
@@ -274,7 +273,6 @@ module "postgres" {
     PGDATA            = "/var/lib/postgresql/data/pgdata"
   }
   networks    = concat([module.dify_network.name], var.backup_networks)
-  monitoring  = local.monitoring
   healthcheck = local.postgres_healthcheck
 }
 
@@ -290,7 +288,6 @@ module "redis" {
   }
   command     = ["redis-server", "--requirepass", local.redis_password]
   networks    = [module.dify_network.name]
-  monitoring  = local.monitoring
   healthcheck = local.redis_healthcheck
 }
 
@@ -315,7 +312,6 @@ module "weaviate" {
     DISABLE_TELEMETRY                      = "true"
   }
   networks    = [module.dify_network.name]
-  monitoring  = local.monitoring
   healthcheck = local.weaviate_healthcheck
 }
 
@@ -330,7 +326,6 @@ module "ssrf_proxy" {
     COREDUMP_DIR = "/var/spool/squid"
   }
   networks   = [module.dify_network.name, module.dify_ssrf_network.name]
-  monitoring = local.monitoring
 }
 
 # Sandbox for code execution
@@ -350,7 +345,6 @@ module "sandbox" {
     SANDBOX_PORT   = "8194"
   }
   networks    = [module.dify_ssrf_network.name]
-  monitoring  = local.monitoring
   healthcheck = local.sandbox_healthcheck
   depends_on  = [module.ssrf_proxy]
 }
@@ -383,7 +377,6 @@ module "plugin_daemon" {
     PLUGIN_MEDIA_CACHE_PATH        = "assets"
   })
   networks   = [module.dify_network.name]
-  monitoring = local.monitoring
   depends_on = [module.postgres, module.redis]
 }
 
@@ -398,7 +391,6 @@ module "api" {
     MODE = "api"
   })
   networks   = [module.dify_network.name, module.dify_ssrf_network.name]
-  monitoring = local.monitoring
   depends_on = [module.postgres, module.redis, module.weaviate, module.sandbox, module.ssrf_proxy]
 }
 
@@ -413,7 +405,6 @@ module "worker" {
     MODE = "worker"
   })
   networks   = [module.dify_network.name, module.dify_ssrf_network.name]
-  monitoring = local.monitoring
   depends_on = [module.postgres, module.redis, module.weaviate, module.sandbox, module.ssrf_proxy]
 }
 
@@ -428,7 +419,6 @@ module "worker_beat" {
     MODE = "beat"
   })
   networks   = [module.dify_network.name, module.dify_ssrf_network.name]
-  monitoring = local.monitoring
   depends_on = [module.postgres, module.redis]
 }
 
@@ -451,7 +441,6 @@ module "web" {
     MARKETPLACE_URL                = "https://marketplace.dify.ai"
   }
   networks   = concat([module.dify_network.name], var.networks)
-  monitoring = local.monitoring
   depends_on = [module.api]
 }
 
@@ -568,7 +557,6 @@ module "nginx" {
     }
   ]
   networks   = concat([module.dify_network.name], var.networks)
-  monitoring = local.monitoring
   depends_on = [module.api, module.web, local_file.nginx_conf]
 }
 

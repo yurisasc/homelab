@@ -91,7 +91,7 @@ module "homelab_tunnel" {
 | `tunnel_secret`         | Secret for the tunnel                   | string       | "" (auto-generated if empty)                 |
 | `ingress_rules`         | List of ingress rules                   | list(object) | (optional)                                   |
 | `service_definitions`   | List of service definitions. Tunnel will create DNS records for each service with a subdomain.             | list(object) | (optional)                                   |
-| `monitoring`            | Enable monitoring via Watchtower        | bool         | true                                         |
+| `monitoring`            | DEPRECATED: Previously enabled monitoring via Watchtower. Now a no-op.        | bool         | false                                        |
 
 ### Ingress Rules Object Structure
 

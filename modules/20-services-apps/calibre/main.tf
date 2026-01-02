@@ -45,7 +45,6 @@ locals {
   container_name        = "calibre-web-automated"
   calibre_image         = "crocodilestick/calibre-web-automated"
   calibre_tag           = var.image_tag
-  monitoring            = true
   env_file              = "${path.module}/.env"
   calibre_internal_port = 8083
   docker_mods           = "lscr.io/linuxserver/mods:universal-calibre-v7.16.0"
@@ -87,7 +86,6 @@ module "calibre" {
   volumes        = local.calibre_volumes
   env_vars       = local.calibre_env_vars
   networks       = concat(var.networks)
-  monitoring     = local.monitoring
   restart_policy = "always"
 }
 

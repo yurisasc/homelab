@@ -42,7 +42,6 @@ locals {
   postgres_image       = "postgres"
   nocodb_tag           = var.image_tag
   postgres_tag         = var.postgres_image_tag
-  monitoring           = true
   nocodb_internal_port = 8080
   env_file             = "${path.module}/.env"
   postgres_user        = provider::dotenv::get_by_key("DB_USERNAME", local.env_file)
@@ -106,7 +105,6 @@ module "postgres" {
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
   networks       = concat([module.nocodb_network.name], var.backup_networks)
-  monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
 
@@ -119,7 +117,6 @@ module "nocodb" {
   volumes        = local.nocodb_volumes
   env_vars       = local.nocodb_env_vars
   networks       = concat([module.nocodb_network.name], var.networks)
-  monitoring     = local.monitoring
   depends_on     = [module.postgres]
 }
 

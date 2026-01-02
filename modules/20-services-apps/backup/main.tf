@@ -181,7 +181,6 @@ module "backup_job" {
     EOT
   ]
 
-  monitoring  = true
   healthcheck = local.backup_healthcheck
 }
 

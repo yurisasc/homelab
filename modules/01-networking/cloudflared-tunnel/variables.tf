@@ -60,9 +60,9 @@ variable "service_definitions" {
 }
 
 variable "monitoring" {
-  description = "Enable monitoring via Watchtower"
+  description = "DEPRECATED: Previously enabled monitoring via Watchtower. Now a no-op."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "networks" {

@@ -21,7 +21,7 @@ variable "networks" {
 }
 
 variable "monitoring" {
-  description = "Enable monitoring labels"
+  description = "DEPRECATED: Previously enabled monitoring labels. Now a no-op."
   type        = bool
-  default     = true
+  default     = false
 }

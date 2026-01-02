@@ -43,7 +43,6 @@ locals {
   panel_tag      = var.image_tag != "" ? var.image_tag : "latest"
   database_tag   = "10.5"
   cache_tag      = "alpine"
-  monitoring     = true
   env_file       = "${path.module}/.env"
 
   # Volume paths
@@ -132,7 +131,6 @@ module "database" {
   env_vars       = local.database_env_vars
   networks       = concat([module.pterodactyl_network.name], var.backup_networks)
   command        = ["--default-authentication-plugin=mysql_native_password"]
-  monitoring     = local.monitoring
 }
 
 # Cache container
@@ -142,7 +140,6 @@ module "cache" {
   image          = local.cache_image
   tag            = local.cache_tag
   networks       = [module.pterodactyl_network.name]
-  monitoring     = local.monitoring
 }
 
 # Panel container
@@ -154,7 +151,6 @@ module "panel" {
   volumes        = local.panel_volumes
   env_vars       = local.panel_env_vars
   networks       = concat([module.pterodactyl_network.name], var.networks)
-  monitoring     = local.monitoring
   depends_on     = [module.database, module.cache]
 }
 

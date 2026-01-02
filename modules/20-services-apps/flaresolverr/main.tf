@@ -20,7 +20,6 @@ locals {
   image          = "21hsmw/flaresolverr"
   port           = 8191
   env_file       = "${path.module}/.env"
-  monitoring     = true
 
   env_vars = {
     LOG_LEVEL      = try(provider::dotenv::get_by_key("LOG_LEVEL", local.env_file), "")
@@ -36,7 +35,6 @@ module "flaresolverr" {
   tag            = var.image_tag
   env_vars       = local.env_vars
   networks       = var.networks
-  monitoring     = local.monitoring
   ports          = [{ internal = local.port, external = local.port, protocol = "tcp" }]
 }
 

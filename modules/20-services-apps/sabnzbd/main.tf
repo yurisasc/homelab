@@ -22,7 +22,6 @@ locals {
   container_name = "sabnzbd"
   image          = "lscr.io/linuxserver/sabnzbd"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   internal_port  = 8080
 
   env_vars = {
@@ -58,7 +57,6 @@ module "sabnzbd" {
   env_vars       = local.env_vars
   volumes        = local.volumes
   networks       = var.networks
-  monitoring     = local.monitoring
   healthcheck    = local.healthcheck
 }
 

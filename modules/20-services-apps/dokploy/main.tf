@@ -68,8 +68,6 @@ locals {
   redis_tag      = "7"
   dokploy_image  = "dokploy/dokploy"
   traefik_image  = "traefik"
-
-  monitoring = true
 }
 
 # Create dedicated dokploy-network for internal communication
@@ -101,7 +99,6 @@ module "dokploy_postgres" {
   ]
 
   networks   = concat([docker_network.dokploy_network.name], var.backup_networks)
-  monitoring = local.monitoring
 }
 
 # Redis container
@@ -120,7 +117,6 @@ module "dokploy_redis" {
   ]
 
   networks   = concat([docker_network.dokploy_network.name], var.networks)
-  monitoring = local.monitoring
 }
 
 # Dokploy app container
@@ -158,7 +154,6 @@ module "dokploy_app" {
 
   # No host port - accessed via Caddy reverse proxy
   networks   = concat([docker_network.dokploy_network.name], var.networks)
-  monitoring = local.monitoring
 
   depends_on = [
     module.dokploy_postgres,
@@ -195,7 +190,6 @@ module "dokploy_traefik" {
   # NO ports - internal access only (Option 2: Traefik listens on 80/443 internally)
   # Caddy proxies to http://dokploy-traefik:80 for on-demand TLS domains
   networks   = concat([docker_network.dokploy_network.name], var.networks)
-  monitoring = local.monitoring
 
   depends_on = [
     module.dokploy_app

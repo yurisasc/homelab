@@ -45,7 +45,7 @@ variable "networks" {
 }
 
 variable "monitoring" {
-  description = "Whether to enable monitoring for the Caddy container"
+  description = "DEPRECATED: Previously enabled container monitoring via Watchtower. Now a no-op."
   type        = bool
   default     = false
 }

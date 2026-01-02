@@ -28,7 +28,6 @@ module "homelab_caddy_proxy" {
   external_ip        = module.cloudflare_globals.external_ip
   service_definitions = module.services.service_definitions
   networks           = ["your-docker-network"]
-  monitoring         = true
 }
 ```
 
@@ -84,7 +83,7 @@ The `publish_via` field controls which networking module(s) will expose the serv
 | `tls_email` | Email address for Let's Encrypt | `string` | - |
 | `service_definitions` | List of service definitions to evaluate | `list(object)` | - |
 | `networks` | List of Docker networks to connect to | `list(string)` | `[]` |
-| `monitoring` | Whether to enable monitoring for the container | `bool` | `false` |
+| `monitoring` | DEPRECATED: Previously enabled container monitoring via Watchtower. Now a no-op. | `bool` | `false` |
 | `cloudflare_zone_id` | Cloudflare Zone ID for creating DNS records | `string` | `""` |
 | `external_ip` | External IP address for A records | `string` | `""` |
 

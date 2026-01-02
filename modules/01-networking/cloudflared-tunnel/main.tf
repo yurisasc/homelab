@@ -107,8 +107,5 @@ module "cloudflared" {
   // Restart policy
   restart_policy = "unless-stopped"
 
-  // Enable monitoring for the container via Watchtower if specified
-  monitoring = var.monitoring
-
   networks = var.networks
 }

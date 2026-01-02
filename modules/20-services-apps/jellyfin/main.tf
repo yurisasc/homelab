@@ -25,7 +25,6 @@ variable "networks" {
 
 locals {
   env_file       = "${path.module}/.env"
-  monitoring     = true
   container_name = "jellyfin"
   image          = "lscr.io/linuxserver/jellyfin"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
@@ -84,7 +83,6 @@ module "jellyfin" {
   volumes        = local.volumes
   env_vars       = local.env_vars
   networks       = var.networks
-  monitoring     = local.monitoring
   ports          = local.udp_ports
   devices        = local.devices
 }

@@ -54,8 +54,8 @@ module "my_service" {
     "com.example.description" = "My service description"
   }
 
-  // Enable Watchtower updates
-  monitoring = true
+  // No-op after Watchtower removal
+  monitoring = false
 }
 ```
 

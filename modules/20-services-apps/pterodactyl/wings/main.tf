@@ -27,7 +27,6 @@ locals {
   container_name = "pterodactyl-wings"
   image          = "ghcr.io/pterodactyl/wings"
   image_tag      = var.image_tag != "" ? var.image_tag : "v1.11.3"
-  monitoring     = false
   env_file       = "${path.module}/.env"
   subdomains     = ["wings"]
 
@@ -102,7 +101,6 @@ module "wings" {
   volumes        = local.volumes
   env_vars       = local.env_vars
   networks       = concat([module.wings_network.name], var.networks)
-  monitoring     = local.monitoring
   privileged     = true
 }
 

@@ -36,7 +36,6 @@ locals {
   container_name = "copyparty"
   image          = "copyparty/ac"
   tag            = var.image_tag
-  monitoring     = true
   internal_port  = 3923
   user           = "${var.puid}:${var.pgid}"
   volumes = [
@@ -66,7 +65,6 @@ module "copyparty" {
   volumes               = local.volumes
   env_vars              = local.env_vars
   networks              = var.networks
-  monitoring            = local.monitoring
   destroy_grace_seconds = 15
   ports = [
     {

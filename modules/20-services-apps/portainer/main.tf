@@ -20,7 +20,6 @@ locals {
   container_name = "portainer"
   image          = "portainer/portainer-ce"
   tag            = var.image_tag
-  monitoring     = true
   internal_port  = 9000
   exposed_port   = 9000
 
@@ -47,7 +46,6 @@ module "portainer" {
   tag            = local.tag
   volumes        = local.volumes
   networks       = var.networks
-  monitoring     = local.monitoring
   ports = [
     {
       internal = local.internal_port

@@ -47,9 +47,7 @@ locals {
   ]
 
   // Define monitoring labels if enabled
-  monitoring_labels = var.monitoring ? {
-    "com.centurylinklabs.watchtower.enable" = "true"
-  } : {}
+  monitoring_labels = {}
 
   // Merge provided labels with monitoring labels
   merged_labels = merge(var.labels, local.monitoring_labels)

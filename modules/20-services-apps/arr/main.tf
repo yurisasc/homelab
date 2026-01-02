@@ -35,7 +35,6 @@ variable "qbittorrent_host" {
 
 locals {
   env_file   = "${path.module}/.env"
-  monitoring = true
 
   sonarr_name       = "sonarr"
   radarr_name       = "radarr"
@@ -149,7 +148,6 @@ module "sonarr" {
     { host_path = var.data_path, container_path = "/data", read_only = false }
   ]
   networks    = var.networks
-  monitoring  = local.monitoring
   ports       = [{ internal = local.sonarr_port, external = local.sonarr_port, protocol = "tcp" }]
 }
 
@@ -164,7 +162,6 @@ module "radarr" {
     { host_path = var.data_path, container_path = "/data", read_only = false }
   ]
   networks    = var.networks
-  monitoring  = local.monitoring
   ports       = [{ internal = local.radarr_port, external = local.radarr_port, protocol = "tcp" }]
 }
 
@@ -179,7 +176,6 @@ module "lidarr" {
     { host_path = var.data_path, container_path = "/data", read_only = false }
   ]
   networks    = var.networks
-  monitoring  = local.monitoring
   healthcheck = local.lidarr_healthcheck
   ports       = [{ internal = local.lidarr_port, external = local.lidarr_port, protocol = "tcp" }]
 }
@@ -195,7 +191,6 @@ module "bazarr" {
     { host_path = var.data_path, container_path = "/data", read_only = false }
   ]
   networks    = var.networks
-  monitoring  = local.monitoring
   healthcheck = local.bazarr_healthcheck
   ports       = [{ internal = local.bazarr_port, external = local.bazarr_port, protocol = "tcp" }]
 }
@@ -210,7 +205,6 @@ module "prowlarr" {
     { host_path = "${var.volume_path}/prowlarr", container_path = "/config", read_only = false }
   ]
   networks    = var.networks
-  monitoring  = local.monitoring
   ports       = [{ internal = local.prowlarr_port, external = local.prowlarr_port, protocol = "tcp" }]
 }
 
@@ -223,7 +217,6 @@ module "jellyseerr" {
   volumes        = [{ host_path = "${var.volume_path}/jellyseerr", container_path = "/app/config", read_only = false }]
   env_vars       = local.jellyseerr_env
   networks       = concat(var.networks, var.proxy_networks)
-  monitoring     = local.monitoring
   healthcheck    = local.jellyseerr_healthcheck
   ports          = [{ internal = local.jellyseerr_port, external = local.jellyseerr_port, protocol = "tcp" }]
 }
@@ -237,7 +230,6 @@ module "unpackerr" {
   env_vars       = local.unpackerr_env
   volumes        = [{ host_path = var.downloads_path, container_path = "/data/torrents", read_only = false }]
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 # Cleanuparr
@@ -254,7 +246,6 @@ module "cleanuparr" {
   ]
   ports = [{ internal = local.cleanuparr_port, external = local.cleanuparr_port, protocol = "tcp" }]
   networks   = var.networks
-  monitoring = local.monitoring
 }
 
 module "decluttarr" {
@@ -264,7 +255,6 @@ module "decluttarr" {
   tag            = local.decluttarr_tag
   env_vars       = local.decluttarr_env
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

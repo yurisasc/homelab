@@ -27,7 +27,6 @@ locals {
   container_name = "crawl4ai"
   image          = "unclecode/crawl4ai"
   image_tag      = var.image_tag
-  monitoring     = true
   service_port   = provider::dotenv::get_by_key("PORT", local.env_file)
   env_file       = "${path.module}/.env"
 
@@ -84,7 +83,6 @@ module "crawl4ai" {
   ports          = local.ports
   env_vars       = local.env_vars
   networks       = var.networks
-  monitoring     = local.monitoring
   healthcheck    = local.healthcheck
   user           = "appuser"
 }

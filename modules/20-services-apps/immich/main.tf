@@ -36,7 +36,6 @@ variable "backup_networks" {
 
 locals {
   env_file   = "${path.module}/.env"
-  monitoring = true
 
   # Container names
   server_name   = "immich-server"
@@ -142,7 +141,6 @@ module "redis" {
   image          = local.redis_image
   tag            = local.redis_tag
   networks       = [module.immich_network.name]
-  monitoring     = local.monitoring
   healthcheck    = local.redis_healthcheck
 }
 
@@ -155,7 +153,6 @@ module "postgres" {
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
   networks       = concat([module.immich_network.name], var.backup_networks)
-  monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
 
@@ -167,7 +164,6 @@ module "machine_learning" {
   tag            = local.ml_tag
   volumes        = local.ml_volumes
   networks       = [module.immich_network.name]
-  monitoring     = local.monitoring
 }
 
 # Immich Server service
@@ -186,7 +182,6 @@ module "immich" {
   volumes    = local.server_volumes
   env_vars   = local.server_env_vars
   networks   = concat([module.immich_network.name], var.networks)
-  monitoring = local.monitoring
   depends_on = [module.postgres, module.redis]
 }
 

@@ -84,9 +84,9 @@ variable "labels" {
 }
 
 variable "monitoring" {
-  description = "Enable container monitoring via Watchtower"
+  description = "DEPRECATED: Previously enabled container monitoring via Watchtower. Now a no-op."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "host_mappings" {

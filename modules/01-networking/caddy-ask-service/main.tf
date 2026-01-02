@@ -87,7 +87,6 @@ module "caddy_ask" {
   ]
 
   networks   = var.networks
-  monitoring = var.monitoring
 
   depends_on = [local_file.ask_server]
 }

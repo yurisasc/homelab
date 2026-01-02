@@ -44,7 +44,6 @@ locals {
   meilisearch_image    = "getmeili/meilisearch"
   meilisearch_tag      = "v1.12.8"
   linkwarden_image_tag = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring           = true
   env_file             = "${path.module}/.env"
   internal_port        = 3000
   postgres_port        = 5432
@@ -120,7 +119,6 @@ module "linkwarden" {
   volumes        = local.linkwarden_volumes
   env_vars       = local.linkwarden_env_vars
   networks       = var.networks
-  monitoring     = local.monitoring
   depends_on     = [module.postgres, module.meilisearch]
 }
 

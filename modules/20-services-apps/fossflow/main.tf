@@ -37,7 +37,6 @@ locals {
   container_name = "fossflow"
   image          = "stnsmith/fossflow"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   internal_port  = 80
   subdomains     = ["fossflow"]
 
@@ -74,7 +73,6 @@ module "fossflow" {
   ports          = local.ports
   env_vars       = local.env_vars
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

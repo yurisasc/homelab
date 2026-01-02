@@ -18,7 +18,6 @@ locals {
   container_name = "actualbudget"
   image          = "actualbudget/actual-server"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   exposed_port   = 5006
   subdomains     = ["budget"]
   default_volumes = [
@@ -37,7 +36,6 @@ module "actualbudget" {
   tag            = local.image_tag
   volumes        = local.default_volumes
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

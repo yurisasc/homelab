@@ -27,7 +27,6 @@ locals {
   container_name = "searxng"
   image          = "searxng/searxng"
   tag            = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   internal_port  = 8080
   volumes = [
     {
@@ -45,7 +44,6 @@ module "searxng" {
   tag            = local.tag
   volumes        = local.volumes
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

@@ -47,7 +47,6 @@ locals {
   postgres_tag         = "pg16"
   redis_tag            = "latest"
   manticore_tag        = try(provider::dotenv::get_by_key("MANTICORE_VERSION", local.env_file), "10.1.0")
-  monitoring           = true
   env_file             = "${path.module}/.env"
   affine_internal_port = 3010
 
@@ -168,7 +167,6 @@ module "redis" {
   image          = local.redis_image
   tag            = local.redis_tag
   networks       = [module.affine_network.name]
-  monitoring     = local.monitoring
   healthcheck    = local.redis_healthcheck
 }
 
@@ -181,7 +179,6 @@ module "postgres" {
   volumes        = local.postgres_volumes
   env_vars       = local.postgres_env_vars
   networks       = concat([module.affine_network.name], var.backup_networks)
-  monitoring     = local.monitoring
   healthcheck    = local.postgres_healthcheck
 }
 
@@ -193,7 +190,6 @@ module "indexer" {
   tag            = local.manticore_tag
   volumes        = local.indexer_volumes
   networks       = [module.affine_network.name]
-  monitoring     = local.monitoring
   healthcheck    = local.indexer_healthcheck
 }
 
@@ -207,7 +203,6 @@ module "migration" {
   env_vars       = local.affine_env_vars
   command        = ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
   networks       = [module.affine_network.name]
-  monitoring     = local.monitoring
   depends_on     = [module.postgres, module.redis]
   restart_policy = "no"
 }
@@ -221,7 +216,6 @@ module "affine" {
   volumes        = local.affine_volumes
   env_vars       = local.affine_env_vars
   networks       = concat([module.affine_network.name], var.networks)
-  monitoring     = local.monitoring
   depends_on     = [module.postgres, module.redis, module.migration, module.indexer]
 }
 

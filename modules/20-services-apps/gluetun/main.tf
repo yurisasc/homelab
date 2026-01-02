@@ -37,7 +37,6 @@ locals {
   container_name = "gluetun"
   image          = "qmcgaw/gluetun"
   tag            = var.image_tag
-  monitoring     = true
 
   // Gluetun environment
   env_vars = {
@@ -75,7 +74,7 @@ module "gluetun" {
   env_vars       = local.env_vars
   volumes        = local.volumes
   networks       = var.networks
-  monitoring     = local.monitoring
+  ports          = var.ports
 
   // Grant minimal privileges required by Gluetun
   capabilities_add = ["NET_ADMIN"]
@@ -86,6 +85,4 @@ module "gluetun" {
       permissions    = "rwm"
     }
   ]
-
-  ports = var.ports
 }

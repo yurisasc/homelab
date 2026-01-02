@@ -18,7 +18,6 @@ locals {
   container_name = "ntfy"
   image          = "binwiederhier/ntfy"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   exposed_port   = 80
   subdomains     = ["ntfy"]
   default_volumes = [
@@ -42,7 +41,6 @@ module "ntfy" {
   tag            = local.image_tag
   volumes        = local.default_volumes
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

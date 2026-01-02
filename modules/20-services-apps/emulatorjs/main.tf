@@ -21,7 +21,6 @@ locals {
   container_name = "emulatorjs"
   image          = "linuxserver/emulatorjs"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   env_file       = "${path.module}/.env"
   frontend_port  = provider::dotenv::get_by_key("EMULATORJS_FRONTEND_PORT", local.env_file)
   config_port    = provider::dotenv::get_by_key("EMULATORJS_CONFIG_PORT", local.env_file)
@@ -65,7 +64,6 @@ module "emulatorjs" {
   tag            = local.image_tag
   volumes        = local.volumes
   ports          = local.ports
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

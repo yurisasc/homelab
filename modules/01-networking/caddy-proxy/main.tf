@@ -141,7 +141,6 @@ module "caddy" {
     }
   ]
 
-  monitoring = var.monitoring
   networks   = var.networks
 
   depends_on = [

@@ -18,7 +18,6 @@ locals {
   container_name = "glance"
   image          = "glanceapp/glance"
   image_tag      = var.image_tag != "" ? var.image_tag : "latest"
-  monitoring     = true
   host_port      = 8080
   subdomains     = ["glance"]
   default_volumes = [
@@ -37,7 +36,6 @@ module "glance" {
   tag            = local.image_tag
   volumes        = local.default_volumes
   networks       = var.networks
-  monitoring     = local.monitoring
 }
 
 output "service_definition" {

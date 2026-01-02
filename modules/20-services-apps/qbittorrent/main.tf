@@ -35,7 +35,6 @@ locals {
   container_name = "qbittorrent"
   image          = "lscr.io/linuxserver/qbittorrent"
   image_tag      = var.image_tag != "" ? var.image_tag : "libtorrentv1"
-  monitoring     = true
   internal_port  = 8080
 
   use_gluetun    = var.connect_via_gluetun
@@ -77,7 +76,6 @@ module "qbittorrent" {
   volumes        = local.volumes
   network_mode   = local.network_mode
   networks       = local.use_gluetun ? [] : var.networks
-  monitoring     = local.monitoring
   healthcheck    = local.healthcheck
   ports          = local.use_gluetun ? [] : [{ internal = local.internal_port, external = local.internal_port, protocol = "tcp" }]
 }

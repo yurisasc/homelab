@@ -10,10 +10,6 @@ module "tls_globals" {
   source = "./modules/00-globals/tls"
 }
 
-module "watchtower" {
-  source = "./modules/20-services-apps/watchtower"
-}
-
 // Application services
 module "services" {
   source = "./services"
@@ -32,7 +28,6 @@ module "homelab_cloudflared_tunnel" {
   container_name        = "cloudflared-homelab"
   service_definitions   = module.services.service_definitions
   networks              = [module.services.homelab_docker_network_name]
-  monitoring            = true
 }
 
 module "homelab_caddy_proxy" {
@@ -46,7 +41,6 @@ module "homelab_caddy_proxy" {
   service_definitions = module.services.service_definitions
   volume_path         = local.volume_host
   networks            = [module.services.homelab_docker_network_name]
-  monitoring          = true
 
   # On-demand TLS for Dokploy-managed domains
   enable_ondemand_tls      = true
