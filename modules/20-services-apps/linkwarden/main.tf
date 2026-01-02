@@ -28,11 +28,17 @@ variable "backup_networks" {
   default     = []
 }
 
+variable "flaresolverr_url" {
+  description = "The URL for Flaresolverr"
+  type        = string
+  default     = ""
+}
+
 locals {
   container_name       = "linkwarden"
   postgres_name        = "linkwarden-postgres"
   meilisearch_name     = "meilisearch"
-  linkwarden_image     = "ghcr.io/linkwarden/linkwarden"
+  linkwarden_image     = "ghcr.io/yurisasc/linkwarden"
   postgres_image       = "postgres"
   postgres_tag         = "16-alpine"
   meilisearch_image    = "getmeili/meilisearch"
@@ -74,6 +80,7 @@ locals {
     DATABASE_URL    = "postgresql://postgres:${provider::dotenv::get_by_key("POSTGRES_PASSWORD", local.env_file)}@${local.postgres_name}:${local.postgres_port}/postgres"
     MEILI_HOST      = "http://${local.meilisearch_name}:7700"
     MEILI_MASTER_KEY = try(provider::dotenv::get_by_key("MEILI_MASTER_KEY", local.env_file), "")
+    FLARESOLVERR_URL = var.flaresolverr_url
   }
 
   postgres_env_vars = {

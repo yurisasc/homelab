@@ -43,7 +43,6 @@ locals {
   bazarr_name       = "bazarr"
   prowlarr_name     = "prowlarr"
   jellyseerr_name   = "jellyseerr"
-  flaresolverr_name = "flaresolverr"
   unpackerr_name    = "unpackerr"
   cleanuparr_name   = "cleanuparr"
   decluttarr_name   = "decluttarr"
@@ -60,8 +59,6 @@ locals {
   prowlarr_tag       = "2.3.0"
   jellyseerr_image   = "ghcr.io/fallenbagel/jellyseerr"
   jellyseerr_tag     = "2.7.3"
-  flaresolverr_image = "21hsmw/flaresolverr"
-  flaresolverr_tag   = "nodriver"
   unpackerr_image    = "ghcr.io/unpackerr/unpackerr"
   unpackerr_tag      = "v0.14.5"
   cleanuparr_image   = "ghcr.io/cleanuparr/cleanuparr"
@@ -75,7 +72,6 @@ locals {
   bazarr_port       = 6767
   prowlarr_port     = 9696
   jellyseerr_port   = 5055
-  flaresolverr_port = 8191
   cleanuparr_port   = 11011
 
   lidarr_healthcheck     = { test = ["CMD", "curl", "--fail", "http://127.0.0.1:${local.lidarr_port}/lidarr/ping"], interval = "60s", timeout = "5s", retries = 10 }
@@ -83,11 +79,6 @@ locals {
   jellyseerr_healthcheck = { test = ["CMD", "wget", "http://127.0.0.1:${local.jellyseerr_port}/api/v1/status", "-qO", "/dev/null"], interval = "60s", timeout = "5s", retries = 10 }
 
   jellyseerr_env = { LOG_LEVEL = "debug" }
-  flaresolverr_env = {
-    LOG_LEVEL      = try(provider::dotenv::get_by_key("LOG_LEVEL", local.env_file), "")
-    LOG_HTML       = try(provider::dotenv::get_by_key("LOG_HTML", local.env_file), "")
-    CAPTCHA_SOLVER = try(provider::dotenv::get_by_key("CAPTCHA_SOLVER", local.env_file), "")
-  }
   unpackerr_env = {
     UN_SONARR_0_URL     = "http://${local.sonarr_name}:${local.sonarr_port}/sonarr"
     UN_SONARR_0_API_KEY = provider::dotenv::get_by_key("SONARR_API_KEY", local.env_file)
@@ -235,18 +226,6 @@ module "jellyseerr" {
   monitoring     = local.monitoring
   healthcheck    = local.jellyseerr_healthcheck
   ports          = [{ internal = local.jellyseerr_port, external = local.jellyseerr_port, protocol = "tcp" }]
-}
-
-# Flaresolverr
-module "flaresolverr" {
-  source         = "../../10-services-generic/docker-service"
-  container_name = local.flaresolverr_name
-  image          = local.flaresolverr_image
-  tag            = local.flaresolverr_tag
-  env_vars       = local.flaresolverr_env
-  networks       = var.networks
-  monitoring     = local.monitoring
-  ports          = [{ internal = local.flaresolverr_port, external = local.flaresolverr_port, protocol = "tcp" }]
 }
 
 # Unpackerr

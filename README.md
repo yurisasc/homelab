@@ -138,6 +138,7 @@ Make sure you are in the root directory of the project (`homelab/`).
 | `immich-server` | Photo management | Reverse proxy | Better fit for large uploads/downloads; direct proxy tuning |
 | `jellyfin` | Media streaming | Reverse proxy | Streaming/large transfers are not a good fit for Tunnel |
 | `linkwarden` | Bookmark manager | Cloudflare Tunnel | Public access without opening inbound ports |
+| `flaresolverr` | Proxy server to bypass Cloudflare/reCAPTCHA | Internal | Shared across Linkwarden and *arr stack |
 | `n8n` | Automation workflows | Cloudflare Tunnel | Public access without opening inbound ports |
 | `n8n-mcp` | n8n MCP endpoint | Cloudflare Tunnel | Public access without opening inbound ports |
 | `nocodb` | Airtable-like database UI | Cloudflare Tunnel | Public access without opening inbound ports |

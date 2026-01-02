@@ -124,6 +124,11 @@ module "fossflow" {
   host_port   = 31845
 }
 
+module "flaresolverr" {
+  source   = "${local.module_dir}/20-services-apps/flaresolverr"
+  networks = [module.homelab_docker_network.name, module.media_docker_network.name]
+}
+
 module "glance" {
   source      = "${local.module_dir}/20-services-apps/glance"
   volume_path = "${local.volume_host}/glance"
@@ -164,11 +169,12 @@ module "jellyfin" {
 }
 
 module "linkwarden" {
-  source          = "${local.module_dir}/20-services-apps/linkwarden"
-  volume_path     = "${local.volume_host}/linkwarden"
-  networks        = [module.homelab_docker_network.name]
-  backup_networks = [module.backup_docker_network.name]
-  image_tag       = "v2.13.5"
+  source           = "${local.module_dir}/20-services-apps/linkwarden"
+  volume_path      = "${local.volume_host}/linkwarden"
+  networks         = [module.homelab_docker_network.name]
+  backup_networks  = [module.backup_docker_network.name]
+  image_tag        = "v2.13.5"
+  flaresolverr_url = module.flaresolverr.endpoint
 }
 
 module "n8n" {
