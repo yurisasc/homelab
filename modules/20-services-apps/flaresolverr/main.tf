@@ -17,14 +17,14 @@ variable "image_tag" {
 
 locals {
   container_name = "flaresolverr"
-  image          = "21hsmw/flaresolverr"
+  image          = "ghcr.io/flaresolverr/flaresolverr"
   port           = 8191
   env_file       = "${path.module}/.env"
 
   env_vars = {
-    LOG_LEVEL      = try(provider::dotenv::get_by_key("LOG_LEVEL", local.env_file), "")
-    LOG_HTML       = try(provider::dotenv::get_by_key("LOG_HTML", local.env_file), "")
-    CAPTCHA_SOLVER = try(provider::dotenv::get_by_key("CAPTCHA_SOLVER", local.env_file), "")
+    LOG_LEVEL      = try(provider::dotenv::get_by_key("LOG_LEVEL", local.env_file), "info")
+    LOG_HTML       = try(provider::dotenv::get_by_key("LOG_HTML", local.env_file), "false")
+    CAPTCHA_SOLVER = try(provider::dotenv::get_by_key("CAPTCHA_SOLVER", local.env_file), "none")
   }
 }
 

@@ -6,7 +6,7 @@ This module deploys [Flaresolverr](https://github.com/FlareSolverr/FlareSolverr)
 
 The Flaresolverr module:
 
-- Deploys the `21hsmw/flaresolverr` Docker container
+- Deploys the `ghcr.io/flaresolverr/flaresolverr` Docker container
 - Provides a shared instance for bypassing challenges
 - Supports multiple Docker networks for cross-stack communication
 

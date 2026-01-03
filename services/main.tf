@@ -126,6 +126,7 @@ module "fossflow" {
 
 module "flaresolverr" {
   source   = "${local.module_dir}/20-services-apps/flaresolverr"
+  image_tag = "v3.4.6"
   networks = [module.homelab_docker_network.name, module.media_docker_network.name]
 }
 
@@ -173,7 +174,7 @@ module "linkwarden" {
   volume_path      = "${local.volume_host}/linkwarden"
   networks         = [module.homelab_docker_network.name]
   backup_networks  = [module.backup_docker_network.name]
-  image_tag        = "v2.13.5"
+  image_tag        = "v2.13.5-flaresolverr"
   flaresolverr_url = module.flaresolverr.endpoint
 }
 
